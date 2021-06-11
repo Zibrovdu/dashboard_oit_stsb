@@ -14,4 +14,3 @@ db_dialect = cfg_parser['connect']['dialect']
 table_name = cfg_parser['table_names']['db_table']
 
 engine = create_engine(f'{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}')
-

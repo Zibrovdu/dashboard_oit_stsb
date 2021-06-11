@@ -1,4 +1,3 @@
-import dash
 from dash.dependencies import Output, Input
 
 import oit_stsb
@@ -20,5 +19,3 @@ def register_callbacks(app):
         columns = oit_stsb.set_columns()
 
         return data_df.to_dict('records'), columns
-
-
