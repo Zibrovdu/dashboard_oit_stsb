@@ -1,0 +1,6 @@
+/venv
+*.xlsx
+/.idea
+/__pycache__
+/oit_stsb/__pycache__
+*.rkz
