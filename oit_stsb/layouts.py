@@ -1,9 +1,8 @@
-import dash_html_components as html
 import dash_core_components as dcc
+import dash_html_components as html
 import dash_table.Format
 
 import oit_stsb
-
 from oit_stsb.load_cfg import table_name
 
 
@@ -14,7 +13,9 @@ def serve_layout():
     layout = html.Div([
         html.Div([
             html.H2('Отдел информационно-технического сопровождения центральной бухгалтерии'),
-            html.Img(src='assets/logo.png')
+            html.A([
+                html.Img(src="assets/logo.png")
+            ], href='#modal-1', className='js-modal-open link')
         ], className='banner'),
         html.Div([
             html.Div([
@@ -69,16 +70,46 @@ def serve_layout():
                                               'backgroundColor': 'tomato', 'color': 'white'},
                                              {'if': {'filter_query': f'{{8}} < 10', 'column_id': 8},
                                               'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': f'{{9}} > "07:" && {{9}} < "14:"', 'column_id': 9},
+                                             {'if': {'filter_query': f'{{9}} < "30:" && {{9}} > "24:"', 'column_id': 9},
                                               'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': '{9} > "14:"', 'column_id': 9},
+                                             {'if': {'filter_query': '{9} < "24:"', 'column_id': 9},
                                               'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': '{9} < "07"', 'column_id': 9},
+                                             {'if': {'filter_query': '{9} > "30"', 'column_id': 9},
                                               'backgroundColor': 'tomato', 'color': 'white'},
-
+                                             {'if': {'filter_query': f'{{12}} > 6', 'column_id': 12},
+                                              'backgroundColor': '#c4fbdb'},
+                                             {'if': {'filter_query': f'{{12}} < 6 && {{12}} > 4', 'column_id': 12},
+                                              'backgroundColor': '#fcb500'},
+                                             {'if': {'filter_query': f'{{12}} < 4', 'column_id': 12},
+                                              'backgroundColor': 'tomato', 'color': 'white'}
                                          ])
                 ], style=dict(width='95%', padding='0 2.5%'))
             )
-        ])
+        ]),
+        html.Div([
+            html.Div([
+                html.Div([
+                    html.Div([
+                        'История изменений'
+                    ], className='modal__dialog-header-content'),
+                    html.Div([
+                        html.Button([
+                            html.Span('x')
+                        ], className='js-modal-close modal__dialog-header-close-btn')
+                    ], className='modal__dialog-header-close')
+                ], className='modal__dialog-header'),
+                html.Div([
+                    html.Br(),
+                    html.Div([
+                        dcc.Textarea(value=oit_stsb.read_history_data(), readOnly=True, className='frame-history')
+                    ]),
+                    html.Br(),
+                ], className='modal__dialog-body'),
+                html.Div([
+                    html.Button('Close', className='js-modal-close modal__dialog-footer-close-btn')
+                ], className='modal__dialog-footer')
+            ], className='modal__dialog')
+        ], id='modal-1', className='modal_history modal--l'),
+        html.Script(src='assets/js/main.js'),
     ])
     return layout
