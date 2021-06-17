@@ -10,6 +10,8 @@ def serve_layout():
     data_df = oit_stsb.load_data(table=table_name)
     end_month = oit_stsb.set_periods(df=data_df)
 
+    colors = [dict(label=f'Цветовая схема № {i + 1}', value=j) for i, j in enumerate(oit_stsb.load_cfg.color_schemes)]
+
     layout = html.Div([
         html.Div([
             html.H2('Отдел информационно-технического сопровождения центральной бухгалтерии'),
@@ -49,7 +51,8 @@ def serve_layout():
                                          style_cell={
                                              'whiteSpace': 'normal',
                                              'height': 'auto',
-                                             'textAlign': 'center'
+                                             'textAlign': 'center',
+                                             'backgroundColor': '#f0f8ff'
                                          },
                                          style_data_conditional=[
                                              {'if': {'filter_query': f'{{4}} > 60 && {{4}} < 70', 'column_id': 4},
@@ -82,10 +85,43 @@ def serve_layout():
                                               'backgroundColor': '#fcb500'},
                                              {'if': {'filter_query': f'{{12}} < 4', 'column_id': 12},
                                               'backgroundColor': 'tomato', 'color': 'white'}
-                                         ])
+                                         ],
+                                         export_format='xlsx')
                 ], style=dict(width='95%', padding='0 2.5%'))
             )
         ]),
+        html.Div([
+            html.Div([
+                html.Label('Выберите цветовую схему: '),
+            ], style=dict(margin='25px 10px', width='255px'), className='bblock'),
+            html.Div([
+                dcc.Dropdown(id='choose_colorscheme',
+                             options=colors,
+                             value=colors[0]['value'],
+                             clearable=False,
+                             searchable=False)
+            ], style=dict(margin='25px 10px', width='30%'), className='bblock'),
+        ]),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='total_task_pie')
+            ], className='line_block', style=dict(width='40%')
+            ),
+            html.Div([
+                dcc.Graph(id='inc_close_wo_3l')
+            ], className='line_block', style=dict(width='58%')
+            ),
+        ], style=dict(backgroundColor='#ebecf1')),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='inc_wo_sla_violation')
+            ], className='line_block', style=dict(width='48%')
+            ),
+            html.Div([
+                dcc.Graph(id='inc_back_work')
+            ], className='line_block', style=dict(width='48%')
+            ),
+        ], style=dict(backgroundColor='#ebecf1')),
         html.Div([
             html.Div([
                 html.Div([
@@ -111,5 +147,5 @@ def serve_layout():
             ], className='modal__dialog')
         ], id='modal-1', className='modal_history modal--l'),
         html.Script(src='assets/js/main.js'),
-    ])
+    ], style=dict(background='#ebecf1'))
     return layout
