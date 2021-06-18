@@ -124,6 +124,16 @@ def serve_layout():
         ], style=dict(backgroundColor='#ebecf1')),
         html.Div([
             html.Div([
+                dcc.Graph(id='mean_time_solve_wo_waiting')
+            ], className='line_block', style=dict(width='48%')
+            ),
+            html.Div([
+                dcc.Graph(id='mean_count_tasks_per_empl_per_day')
+            ], className='line_block', style=dict(width='48%')
+            ),
+        ], style=dict(backgroundColor='#ebecf1')),
+        html.Div([
+            html.Div([
                 html.Div([
                     html.Div([
                         'История изменений'

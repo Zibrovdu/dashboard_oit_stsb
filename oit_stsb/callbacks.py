@@ -13,6 +13,8 @@ def register_callbacks(app):
         Output('inc_close_wo_3l', 'figure'),
         Output('inc_wo_sla_violation', 'figure'),
         Output('inc_back_work', 'figure'),
+        Output('mean_time_solve_wo_waiting', 'figure'),
+        Output('mean_count_tasks_per_empl_per_day', 'figure'),
         [Input('month_dd', 'value'),
          Input('choose_colorscheme', 'value')]
     )
@@ -47,4 +49,19 @@ def register_callbacks(app):
                                                          name=oit_stsb.load_cfg.tasks_back_work_name,
                                                          title=oit_stsb.load_cfg.tasks_back_work_title)
 
-        return data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph, inc_back_work_graph
+        mean_time_solve_wo_waiting_graph = oit_stsb.figures.make_bars(df=data_df.loc[:len(data_df) - 2],
+                                                                      column=9,
+                                                                      norma=oit_stsb.load_cfg.mean_time_solve_wo_waiting,
+                                                                      colors=colors,
+                                                                      name=oit_stsb.load_cfg.mean_time_solve_wo_waiting_name,
+                                                                      title=oit_stsb.load_cfg.mean_time_solve_wo_waiting_title)
+
+        mean_count_tasks_per_empl_per_day_graph = oit_stsb.figures.make_bars(df=data_df.loc[:len(data_df) - 2],
+                                                                             column=12,
+                                                                             norma=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day,
+                                                                             colors=colors,
+                                                                             name=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day_name,
+                                                                             title=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day_title)
+
+        return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
+                inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph)
