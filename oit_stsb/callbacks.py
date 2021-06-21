@@ -2,6 +2,7 @@ from dash.dependencies import Output, Input
 
 import oit_stsb
 import oit_stsb.figures
+import oit_stsb.staff
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l
 
 
@@ -15,6 +16,8 @@ def register_callbacks(app):
         Output('inc_back_work', 'figure'),
         Output('mean_time_solve_wo_waiting', 'figure'),
         Output('mean_count_tasks_per_empl_per_day', 'figure'),
+        Output('staff_table', 'data'),
+        Output('staff_table', 'columns'),
         [Input('month_dd', 'value'),
          Input('choose_colorscheme', 'value')]
     )
@@ -22,7 +25,7 @@ def register_callbacks(app):
         month, year = value.split('_')
         # data_df = oit_stsb.load_data(table=table_name, month=month, year=year)
 
-        data_df = oit_stsb.make_main_table(table_name=table_name, month=month, year=year)
+        data_df = oit_stsb.make_main_table(table_name=table_name, month=month, year=year, column='Регион')
 
         columns = oit_stsb.set_columns()
 
@@ -51,17 +54,28 @@ def register_callbacks(app):
 
         mean_time_solve_wo_waiting_graph = oit_stsb.figures.make_bars(df=data_df.loc[:len(data_df) - 2],
                                                                       column=9,
-                                                                      norma=oit_stsb.load_cfg.mean_time_solve_wo_waiting,
+                                                                      norma=oit_stsb.load_cfg.
+                                                                      mean_time_solve_wo_waiting,
                                                                       colors=colors,
-                                                                      name=oit_stsb.load_cfg.mean_time_solve_wo_waiting_name,
-                                                                      title=oit_stsb.load_cfg.mean_time_solve_wo_waiting_title)
+                                                                      name=oit_stsb.load_cfg.
+                                                                      mean_time_solve_wo_waiting_name,
+                                                                      title=oit_stsb.load_cfg.
+                                                                      mean_time_solve_wo_waiting_title)
 
         mean_count_tasks_per_empl_per_day_graph = oit_stsb.figures.make_bars(df=data_df.loc[:len(data_df) - 2],
                                                                              column=12,
-                                                                             norma=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day,
+                                                                             norma=oit_stsb.load_cfg.
+                                                                             mean_count_tasks_per_empl_per_day,
                                                                              colors=colors,
-                                                                             name=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day_name,
-                                                                             title=oit_stsb.load_cfg.mean_count_tasks_per_empl_per_day_title)
+                                                                             name=oit_stsb.load_cfg.
+                                                                             mean_count_tasks_per_empl_per_day_name,
+                                                                             title=oit_stsb.load_cfg.
+                                                                             mean_count_tasks_per_empl_per_day_title)
+
+        staff_data_df = oit_stsb.staff.make_staff_table(table_name=table_name, month=month, year=year)
+
+        staff_data_columns = oit_stsb.staff.set_staff_columns()
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
-                inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph)
+                inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,
+                staff_data_df.to_dict('records'), staff_data_columns)

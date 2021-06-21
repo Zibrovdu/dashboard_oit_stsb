@@ -37,6 +37,15 @@ def load_data(table, **kwargs):
                     AND closed_year = {kwargs['year']}
                 """, con=engine)
         return df
+    if kwargs['enq_field']:
+        df = pd.read_sql(f"""
+                        SELECT * 
+                        FROM oitstsb_test
+                        WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
+                        AND extract(month from {kwargs['enq_field']}) = {kwargs['month']}
+                        AND extract(year from {kwargs['enq_field']}) = {kwargs['year']}
+                    """, con=engine)
+        return df
 
 
 def get_period_month(year, month):
@@ -103,8 +112,10 @@ def set_periods(df):
     return start_period
 
 
-def make_main_table(table_name, month, year):
-    df = load_data(table=table_name, month=month, year=year)
+def make_main_table(table_name, month, year, column):
+    df = load_data(table=table_name,
+                   month=month,
+                   year=year)
     merged_df = df.merge(df_staff,
                          left_on='specialist',
                          right_on='ФИО',
@@ -113,48 +124,50 @@ def make_main_table(table_name, month, year):
     merged_df.reset_index(inplace=True)
     merged_df['delta'] = merged_df['solve_date'] - merged_df['reg_date']
 
-    result = merged_df.pivot_table(index='Регион',
+    result = merged_df.pivot_table(index=column,
                                    values='task_number',
                                    aggfunc='count').reset_index()
-    result.columns = ['Регион', 'num']
+    result.columns = [column, 'num']
     result['persent'] = result['num'].apply(lambda num: round(num / result['num'].sum() * 100, 1))
 
-    pt = merged_df[merged_df['count_escalation_tasks'] == 0].pivot_table(index='Регион',
+    pt = merged_df[merged_df['count_escalation_tasks'] == 0].pivot_table(index=column,
                                                                          values='task_number',
                                                                          aggfunc='count').reset_index()
-    pt.columns = ['Регион', 'num2']
-    result = result.merge(pt, on='Регион')
+    pt.columns = [column, 'num2']
+    result = result.merge(pt, on=column)
     result['persent2'] = result.apply(lambda row: round(row['num2'] / row['num'] * 100, 1), axis=1)
 
     pt = merged_df[(merged_df['count_escalation_tasks'] == 0) &
-                   (merged_df['is_sla'] == 'Нет')].pivot_table(index='Регион',
+                   (merged_df['is_sla'] == 'Нет')].pivot_table(index=column,
                                                                values='task_number',
                                                                aggfunc='count').reset_index()
-    pt.columns = ['Регион', 'num3']
-    result = result.merge(pt, on='Регион')
+    pt.columns = [column, 'num3']
+    result = result.merge(pt, on=column)
     result['persent3'] = result.apply(lambda row: round(row['num3'] / row['num2'] * 100, 1), axis=1)
 
     pt = merged_df[(merged_df['count_escalation_tasks'] == 0) &
-                   (merged_df['count_of_returns'] > 0)].pivot_table(index='Регион',
+                   (merged_df['count_of_returns'] > 0)].pivot_table(index=column,
                                                                     values='task_number',
                                                                     aggfunc='count').reset_index()
-    pt.columns = ['Регион', 'num4']
-    result = result.merge(pt, on='Регион')
+    pt.columns = [column, 'num4']
+    result = result.merge(pt, on=column)
     result['persent4'] = result.apply(lambda row: round(row['num4'] / row['num2'] * 100, 1), axis=1)
 
-    pt = merged_df[merged_df['count_escalation_tasks'] > 0].pivot_table(index='Регион', values='work_time_solve',
+    pt = merged_df[merged_df['count_escalation_tasks'] > 0].pivot_table(index=column,
+                                                                        values='work_time_solve',
                                                                         aggfunc='mean').reset_index()
-    pt.columns = ['Регион', 'num5']
-    result = result.merge(pt, on='Регион')
+    pt.columns = [column, 'num5']
+    result = result.merge(pt, on=column)
 
-    result['delta'] = result['Регион'].apply(lambda region: merged_df[merged_df['Регион'] == region]['delta'].mean())
+    result['delta'] = result[column].apply(lambda region: merged_df[merged_df[column] == region]['delta'].mean())
     result['delta'] = pd.to_timedelta(result['delta'].values.astype("timedelta64[s]"))
 
-    result['staff'] = result['Регион'].apply(
-        lambda region: len(merged_df[merged_df['Регион'] == region]['specialist'].unique()))
+    result['staff'] = result[column].apply(
+        lambda region: len(merged_df[merged_df[column] == region]['specialist'].unique()))
 
-    result['task_count'] = result.apply(lambda row: round(row['num'] / row['staff'] /
-                                                          get_calendar_data(month=month, year=year), 2), axis=1)
+    result['task_count'] = result.apply(lambda row: round(row['num'] / row['staff'] / get_calendar_data(month=month,
+                                                                                                        year=year), 2),
+                                        axis=1)
 
     result.loc[len(result)] = 'Итог:', result['num'].sum(), round(result['persent'].sum()), result['num2'].sum(), \
                               round(result['num2'].sum() / result['num'].sum() * 100, 1), result['num3'].sum(), \
@@ -162,7 +175,8 @@ def make_main_table(table_name, month, year):
                               round(result['num4'].sum() / result['num2'].sum() * 100, 1), \
                               (result['num2'] * result['num5']).sum() / result['num2'].sum(), result['delta'].mean(), \
                               result['staff'].sum(), round(
-        result['num'].sum() / result['staff'].sum() / get_calendar_data(month=month, year=year), 2)
+        result['num'].sum() / result['staff'].sum() / get_calendar_data(month=month,
+                                                                        year=year), 2)
 
     result['delta'] = result['delta'].astype(str).apply(lambda delta: delta.split('.')[0])
     result['num5'] = pd.to_datetime(result['num5'], unit='h').dt.strftime('%H:%M:%S')
@@ -173,16 +187,13 @@ def make_main_table(table_name, month, year):
 
 def set_columns():
     columns = [{'name': ['Регион', ''], 'id': 0},
-               {'name': ['Инциденты, закрытые группой, из всего потока на 2Л', 'шт.', ''],
-                'id': 1},
-               {'name': ['Инциденты, закрытые группой, из всего потока на 2Л', '%', ''],
-                'id': 2},
+               {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', 'шт.', ''], 'id': 1},
+               {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', '%', ''], 'id': 2},
                {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', 'шт.', 'Не менее 70%'], 'id': 3},
                {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', '%', 'Не менее 70%'], 'id': 4},
                {'name': ['Из них (п.2) Инциденты, без нарушение SLA', 'шт.', 'не менее 85%'], 'id': 5},
                {'name': ['Из них (п.2) Инциденты, без нарушение SLA', '%', 'не менее 85%'], 'id': 6},
-               {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', 'шт.', 'Не более 10%'],
-                'id': 7},
+               {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', 'шт.', 'Не более 10%'], 'id': 7},
                {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', '%', 'Не более 10%'], 'id': 8},
                {'name': ['Из них (п.2) Среднее время решения без учета ожидания', 'чч:мм:сс', 'Не более 24ч'], 'id': 9,
                 'type': 'datetime'},

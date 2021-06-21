@@ -10,6 +10,9 @@ def serve_layout():
     data_df = oit_stsb.load_data(table=table_name)
     end_month = oit_stsb.set_periods(df=data_df)
 
+    tab_selected_style = dict(backgroundColor='#ebecf1',
+                              fontWeight='bold')
+
     colors = [dict(label=f'Цветовая схема № {i + 1}', value=j) for i, j in enumerate(oit_stsb.load_cfg.color_schemes)]
 
     layout = html.Div([
@@ -41,96 +44,166 @@ def serve_layout():
         html.Br(),
         html.Br(),
         html.Div([
-            dcc.Loading(
-                id="loading-1",
-                # type="cube",
-                fullscreen=True,
-                children=html.Div([
-                    dash_table.DataTable(id='main_table',
-                                         merge_duplicate_headers=True,
-                                         style_cell={
-                                             'whiteSpace': 'normal',
-                                             'height': 'auto',
-                                             'textAlign': 'center',
-                                             'backgroundColor': '#f0f8ff'
-                                         },
-                                         style_data_conditional=[
-                                             {'if': {'filter_query': f'{{4}} > 60 && {{4}} < 70', 'column_id': 4},
-                                              'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': f'{{4}} < 60', 'column_id': 4},
-                                              'backgroundColor': 'tomato', 'color': 'white'},
-                                             {'if': {'filter_query': f'{{4}} > 70', 'column_id': 4},
-                                              'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': f'{{6}} > 75 && {{6}} < 85', 'column_id': 6},
-                                              'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': f'{{6}} < 75', 'column_id': 6},
-                                              'backgroundColor': 'tomato', 'color': 'white'},
-                                             {'if': {'filter_query': f'{{6}} > 85', 'column_id': 6},
-                                              'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': f'{{8}} > 10 && {{8}} < 15', 'column_id': 8},
-                                              'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': f'{{8}} > 15', 'column_id': 8},
-                                              'backgroundColor': 'tomato', 'color': 'white'},
-                                             {'if': {'filter_query': f'{{8}} < 10', 'column_id': 8},
-                                              'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': f'{{9}} < "30:" && {{9}} > "24:"', 'column_id': 9},
-                                              'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': '{9} < "24:"', 'column_id': 9},
-                                              'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': '{9} > "30"', 'column_id': 9},
-                                              'backgroundColor': 'tomato', 'color': 'white'},
-                                             {'if': {'filter_query': f'{{12}} > 6', 'column_id': 12},
-                                              'backgroundColor': '#c4fbdb'},
-                                             {'if': {'filter_query': f'{{12}} < 6 && {{12}} > 4', 'column_id': 12},
-                                              'backgroundColor': '#fcb500'},
-                                             {'if': {'filter_query': f'{{12}} < 4', 'column_id': 12},
-                                              'backgroundColor': 'tomato', 'color': 'white'}
-                                         ],
-                                         export_format='xlsx')
-                ], style=dict(width='95%', padding='0 2.5%'))
-            )
-        ]),
-        html.Div([
-            html.Div([
-                html.Label('Выберите цветовую схему: '),
-            ], style=dict(margin='25px 10px', width='255px'), className='bblock'),
-            html.Div([
-                dcc.Dropdown(id='choose_colorscheme',
-                             options=colors,
-                             value=colors[0]['value'],
-                             clearable=False,
-                             searchable=False)
-            ], style=dict(margin='25px 10px', width='30%'), className='bblock'),
-        ]),
-        html.Div([
-            html.Div([
-                dcc.Graph(id='total_task_pie')
-            ], className='line_block', style=dict(width='40%')
-            ),
-            html.Div([
-                dcc.Graph(id='inc_close_wo_3l')
-            ], className='line_block', style=dict(width='58%')
-            ),
-        ], style=dict(backgroundColor='#ebecf1')),
-        html.Div([
-            html.Div([
-                dcc.Graph(id='inc_wo_sla_violation')
-            ], className='line_block', style=dict(width='48%')
-            ),
-            html.Div([
-                dcc.Graph(id='inc_back_work')
-            ], className='line_block', style=dict(width='48%')
-            ),
-        ], style=dict(backgroundColor='#ebecf1')),
-        html.Div([
-            html.Div([
-                dcc.Graph(id='mean_time_solve_wo_waiting')
-            ], className='line_block', style=dict(width='48%')
-            ),
-            html.Div([
-                dcc.Graph(id='mean_count_tasks_per_empl_per_day')
-            ], className='line_block', style=dict(width='48%')
-            ),
+            dcc.Tabs(id='main_tabs',
+                     value='regions',
+                     children=[
+                         dcc.Tab(label='Регионы',
+                                 value='regions',
+                                 children=[
+                                     html.Div([
+                                         dcc.Loading(
+                                             id="loading-1",
+                                             # type="cube",
+                                             fullscreen=True,
+                                             children=html.Div([
+                                                 dash_table.DataTable(id='main_table',
+                                                                      merge_duplicate_headers=True,
+                                                                      style_cell={
+                                                                          'whiteSpace': 'normal',
+                                                                          'height': 'auto',
+                                                                          'textAlign': 'center',
+                                                                          'backgroundColor': '#f0f8ff'
+                                                                      },
+                                                                      style_data_conditional=[
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{4}} > 60 && {{4}} < 70',
+                                                                              'column_id': 4},
+                                                                              'backgroundColor': '#fcb500'},
+                                                                          {'if': {'filter_query': f'{{4}} < 60',
+                                                                                  'column_id': 4},
+                                                                           'backgroundColor': 'tomato',
+                                                                           'color': 'white'},
+                                                                          {'if': {'filter_query': f'{{4}} > 70',
+                                                                                  'column_id': 4},
+                                                                           'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{6}} > 75 && {{6}} < 85',
+                                                                              'column_id': 6},
+                                                                              'backgroundColor': '#fcb500'},
+                                                                          {'if': {'filter_query': f'{{6}} < 75',
+                                                                                  'column_id': 6},
+                                                                           'backgroundColor': 'tomato',
+                                                                           'color': 'white'},
+                                                                          {'if': {'filter_query': f'{{6}} > 85',
+                                                                                  'column_id': 6},
+                                                                           'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{8}} > 10 && {{8}} < 15',
+                                                                              'column_id': 8},
+                                                                              'backgroundColor': '#fcb500'},
+                                                                          {'if': {'filter_query': f'{{8}} > 15',
+                                                                                  'column_id': 8},
+                                                                           'backgroundColor': 'tomato',
+                                                                           'color': 'white'},
+                                                                          {'if': {'filter_query': f'{{8}} < 10',
+                                                                                  'column_id': 8},
+                                                                           'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{9}} < "30:" && {{9}} > "24:"',
+                                                                              'column_id': 9},
+                                                                              'backgroundColor': '#fcb500'},
+                                                                          {'if': {'filter_query': '{9} < "24:"',
+                                                                                  'column_id': 9},
+                                                                           'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {'filter_query': '{9} > "30"',
+                                                                                  'column_id': 9},
+                                                                           'backgroundColor': 'tomato',
+                                                                           'color': 'white'},
+                                                                          {'if': {'filter_query': f'{{12}} > 6',
+                                                                                  'column_id': 12},
+                                                                           'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{12}} < 6 && {{12}} > 4',
+                                                                              'column_id': 12},
+                                                                              'backgroundColor': '#fcb500'},
+                                                                          {'if': {'filter_query': f'{{12}} < 4',
+                                                                                  'column_id': 12},
+                                                                           'backgroundColor': 'tomato',
+                                                                           'color': 'white'}
+                                                                      ],
+                                                                      export_format='xlsx')
+                                             ], style=dict(width='95%', padding='0 2.5%'))
+                                         )
+                                     ]),
+                                     html.Div([
+                                         html.Div([
+                                             html.Label('Выберите цветовую схему: '),
+                                         ], style=dict(margin='25px 10px', width='255px'), className='bblock'),
+                                         html.Div([
+                                             dcc.Dropdown(id='choose_colorscheme',
+                                                          options=colors,
+                                                          value=colors[0]['value'],
+                                                          clearable=False,
+                                                          searchable=False)
+                                         ], style=dict(margin='25px 10px', width='30%'), className='bblock'),
+                                     ]),
+                                     html.Div([
+                                         html.Div([
+                                             dcc.Graph(id='total_task_pie')
+                                         ], className='line_block', style=dict(width='40%')
+                                         ),
+                                         html.Div([
+                                             dcc.Graph(id='inc_close_wo_3l')
+                                         ], className='line_block', style=dict(width='58%')
+                                         ),
+                                     ], style=dict(backgroundColor='#ebecf1')),
+                                     html.Div([
+                                         html.Div([
+                                             dcc.Graph(id='inc_wo_sla_violation')
+                                         ], className='line_block', style=dict(width='48%')
+                                         ),
+                                         html.Div([
+                                             dcc.Graph(id='inc_back_work')
+                                         ], className='line_block', style=dict(width='48%')
+                                         ),
+                                     ], style=dict(backgroundColor='#ebecf1')),
+                                     html.Div([
+                                         html.Div([
+                                             dcc.Graph(id='mean_time_solve_wo_waiting')
+                                         ], className='line_block', style=dict(width='48%')
+                                         ),
+                                         html.Div([
+                                             dcc.Graph(id='mean_count_tasks_per_empl_per_day')
+                                         ], className='line_block', style=dict(width='48%')
+                                         ),
+                                     ], style=dict(backgroundColor='#ebecf1')),
+                                 ],
+                                 selected_style=tab_selected_style),
+                         dcc.Tab(label='Сотрудники',
+                                 value='staff',
+                                 children=[
+                                     html.Div([
+                                         dcc.Loading(
+                                             id='load_staff',
+                                             fullscreen=True,
+                                             children=html.Div([
+                                                 dash_table.DataTable(id='staff_table',
+                                                                      style_cell={
+                                                                          'whiteSpace': 'normal',
+                                                                          'height': 'auto',
+                                                                          'textAlign': 'center',
+                                                                          'backgroundColor': '#f0f8ff'
+                                                                      },
+                                                                      sort_action='native',
+                                                                      export_format='xlsx')
+                                             ], style=dict(width='95%', padding='0 1%'))
+                                         )
+                                     ])
+
+                                 ],
+                                 selected_style=tab_selected_style)
+
+                     ],
+                     colors=dict(border='#ebecf1',
+                                 primary='#222780',
+                                 background='#33ccff')
+                     ),
+
         ], style=dict(backgroundColor='#ebecf1')),
         html.Div([
             html.Div([

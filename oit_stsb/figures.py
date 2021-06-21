@@ -34,14 +34,16 @@ def make_bars(df, column, norma, colors, name, title):
                                                           int(time.split(':')[1])/60 +
                                                           int(time.split(':')[2])/3600, 2)),
                     marker_color=oit_stsb.load_cfg.color_schemes[colors][:len(df)],
-                    showlegend=False)
+                    showlegend=False,
+                    name='')
         text_line = [str(data) for data in df[column]]
         font_params = dict(color='black', size=16)
     else:
         fig.add_bar(x=df[0],
                     y=df[column],
                     marker_color=oit_stsb.load_cfg.color_schemes[colors][:len(df)],
-                    showlegend=False)
+                    showlegend=False,
+                    name='')
         text_line = [str(data) + '%' for data in df[column]]
         font_params = dict(color='black', size=20)
 
@@ -62,7 +64,10 @@ def make_bars(df, column, norma, colors, name, title):
                     text=text_line,
                     textposition='top center',
                     textfont=font_params,
-                    showlegend=False)
+                    showlegend=False,
+                    name='')
+
+    fig.update_traces(hoverinfo="all")
 
     fig.update_layout(paper_bgcolor='#ebecf1',
                       title=title,
