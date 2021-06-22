@@ -190,8 +190,10 @@ def serve_layout():
                                                                           'backgroundColor': '#f0f8ff'
                                                                       },
                                                                       sort_action='native',
-                                                                      export_format='xlsx')
-                                             ], style=dict(width='95%', padding='0 1%'))
+                                                                      export_format='xlsx',
+                                                                      filter_action='native',
+                                                                      )
+                                             ], style=dict(width='98%', padding='0 1%'))
                                          )
                                      ])
 

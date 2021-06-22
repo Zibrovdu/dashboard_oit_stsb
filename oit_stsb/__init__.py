@@ -40,7 +40,7 @@ def load_data(table, **kwargs):
     if kwargs['enq_field']:
         df = pd.read_sql(f"""
                         SELECT * 
-                        FROM oitstsb_test
+                        FROM {table}
                         WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
                         AND extract(month from {kwargs['enq_field']}) = {kwargs['month']}
                         AND extract(year from {kwargs['enq_field']}) = {kwargs['year']}
@@ -115,7 +115,8 @@ def set_periods(df):
 def make_main_table(table_name, month, year, column):
     df = load_data(table=table_name,
                    month=month,
-                   year=year)
+                   year=year,
+                   enq_field='solve_date')
     merged_df = df.merge(df_staff,
                          left_on='specialist',
                          right_on='ФИО',
@@ -134,7 +135,7 @@ def make_main_table(table_name, month, year, column):
                                                                          values='task_number',
                                                                          aggfunc='count').reset_index()
     pt.columns = [column, 'num2']
-    result = result.merge(pt, on=column)
+    result = result.merge(pt, on=column, how='outer')
     result['persent2'] = result.apply(lambda row: round(row['num2'] / row['num'] * 100, 1), axis=1)
 
     pt = merged_df[(merged_df['count_escalation_tasks'] == 0) &
@@ -142,7 +143,7 @@ def make_main_table(table_name, month, year, column):
                                                                values='task_number',
                                                                aggfunc='count').reset_index()
     pt.columns = [column, 'num3']
-    result = result.merge(pt, on=column)
+    result = result.merge(pt, on=column, how='outer')
     result['persent3'] = result.apply(lambda row: round(row['num3'] / row['num2'] * 100, 1), axis=1)
 
     pt = merged_df[(merged_df['count_escalation_tasks'] == 0) &
@@ -150,14 +151,14 @@ def make_main_table(table_name, month, year, column):
                                                                     values='task_number',
                                                                     aggfunc='count').reset_index()
     pt.columns = [column, 'num4']
-    result = result.merge(pt, on=column)
+    result = result.merge(pt, on=column, how='outer')
     result['persent4'] = result.apply(lambda row: round(row['num4'] / row['num2'] * 100, 1), axis=1)
 
     pt = merged_df[merged_df['count_escalation_tasks'] > 0].pivot_table(index=column,
                                                                         values='work_time_solve',
                                                                         aggfunc='mean').reset_index()
     pt.columns = [column, 'num5']
-    result = result.merge(pt, on=column)
+    result = result.merge(pt, on=column, how='outer')
 
     result['delta'] = result[column].apply(lambda region: merged_df[merged_df[column] == region]['delta'].mean())
     result['delta'] = pd.to_timedelta(result['delta'].values.astype("timedelta64[s]"))
@@ -210,3 +211,7 @@ def read_history_data():
         for line in history_text_file:
             history_data += line
         return history_data
+
+
+def create_index_table(df):
+    return pd.DataFrame(range(1, len(df)+1), columns=['index'])

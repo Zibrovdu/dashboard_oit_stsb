@@ -78,4 +78,5 @@ def register_callbacks(app):
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
                 inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,
-                staff_data_df.to_dict('records'), staff_data_columns)
+                staff_data_df.to_dict('records'), staff_data_columns
+                )
