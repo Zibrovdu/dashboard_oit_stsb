@@ -3,11 +3,13 @@ import dash_html_components as html
 import dash_table.Format
 
 import oit_stsb
-from oit_stsb.load_cfg import table_name
+from oit_stsb.load_cfg import table_name, conn_string
+
+filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Регион'])]
 
 
 def serve_layout():
-    data_df = oit_stsb.load_data(table=table_name)
+    data_df = oit_stsb.load_data(table=table_name, connection_string=conn_string)
     end_month = oit_stsb.set_periods(df=data_df)
 
     tab_selected_style = dict(backgroundColor='#ebecf1',
@@ -16,6 +18,8 @@ def serve_layout():
     colors = [dict(label=f'Цветовая схема № {i + 1}', value=j) for i, j in enumerate(oit_stsb.load_cfg.color_schemes)]
 
     layout = html.Div([
+        dcc.Location(id='url',
+                     refresh=True),
         html.Div([
             html.H2('Отдел информационно-технического сопровождения центральной бухгалтерии'),
             html.A([
@@ -39,6 +43,20 @@ def serve_layout():
                     style=dict(width='295px',
                                display='block')),
             ], className='bblock'),
+            html.Div([
+                html.Div([
+                    html.Label('Цветовая схема: '),
+                ], className='label_colorscheme')
+            ], className='bblock'),
+            html.Div([
+                html.Div([
+                    dcc.Dropdown(id='choose_colorscheme',
+                                 options=colors,
+                                 value=colors[0]['value'],
+                                 clearable=False,
+                                 searchable=False)
+                ], className='colorscheme_dropdown'),
+            ], className='bblock')
 
         ], style=dict(background='#b1d5fa', height='55px')),
         html.Br(),
@@ -132,18 +150,6 @@ def serve_layout():
                                      ]),
                                      html.Div([
                                          html.Div([
-                                             html.Label('Выберите цветовую схему: '),
-                                         ], style=dict(margin='25px 10px', width='255px'), className='bblock'),
-                                         html.Div([
-                                             dcc.Dropdown(id='choose_colorscheme',
-                                                          options=colors,
-                                                          value=colors[0]['value'],
-                                                          clearable=False,
-                                                          searchable=False)
-                                         ], style=dict(margin='25px 10px', width='30%'), className='bblock'),
-                                     ]),
-                                     html.Div([
-                                         html.Div([
                                              dcc.Graph(id='total_task_pie')
                                          ], className='line_block', style=dict(width='40%')
                                          ),
@@ -178,6 +184,34 @@ def serve_layout():
                                  value='staff',
                                  children=[
                                      html.Div([
+                                         html.Div([
+                                             html.Label('Столбец для фильтрации')
+                                         ], className='bblock'),
+                                         html.Div([
+                                             dcc.Dropdown(id='main_filter',
+                                                          options=filter_options,
+                                                          clearable=False,
+                                                          searchable=False,
+                                                          placeholder="Выберите столбец",
+                                                          style=dict(width='200px', fontSize='16px'))
+                                         ], className='bblock'),
+                                         html.Div([
+                                             dcc.Dropdown(id='sub_filter',
+                                                          multi=True,
+                                                          clearable=False,
+                                                          searchable=False,
+                                                          style=dict(width='800px', fontSize='14px'))
+                                         ], className='bblock'),
+                                         html.Div([html.Span(id='form_filter', hidden=True)], className='bblock'),
+                                         html.Div([
+                                             html.Button('Применить фильтр', id='filter_btn')
+                                         ], className='bblock'),
+                                         html.Div([
+                                             html.Button('Сбросить фильтр', id='reset_btn')
+                                         ], className='bblock')
+
+                                     ]),
+                                     html.Div([
                                          dcc.Loading(
                                              id='load_staff',
                                              fullscreen=True,
@@ -196,10 +230,8 @@ def serve_layout():
                                              ], style=dict(width='98%', padding='0 1%'))
                                          )
                                      ])
-
                                  ],
                                  selected_style=tab_selected_style)
-
                      ],
                      colors=dict(border='#ebecf1',
                                  primary='#222780',

@@ -110,3 +110,35 @@ media screen and (max-width: 650px) {
         margin: 15px 5px;
 
         }
+
+.label_colorscheme {
+/* Размер и позиционирование */
+    position: relative;
+    width: 156px;
+    margin: 0px 0px 0px 500px;
+    padding: 0px;
+    background: #b1d5fa;
+    border-radius: 1px;
+    color: #012e67;
+}
+
+.colorscheme_dropdown {
+/* Размер и позиционирование */
+    position: relative;
+    width: 250px;
+    margin: 0;
+    padding: 0px;
+    font-size: 18px;
+    color: #012e67;
+    }
+
+.bblock_label {
+     display: inline-block; /*Задаем обтекание*/
+     margin-top: 40px;
+     /*line-height: 40px;/*Высота строки +  верт. центрирования текста*/
+     font-size: 18px;
+     margin: 0;
+     vertical-align: top;
+     height: 50px;
+     padding: 10px;
+    }

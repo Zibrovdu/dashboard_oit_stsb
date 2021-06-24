@@ -51,12 +51,12 @@ def make_bars(df, column, norma, colors, name, title):
         text_line = [str(data) for data in df[column]]
 
     fig.add_scatter(x=df[0],
-                    y=[norma for index in range(len(df))],
+                    y=[norma] * len(df),
                     line=dict(width=3, color=oit_stsb.load_cfg.color_schemes[colors][len(df)]),
                     marker=dict(size=3),
                     name=name)
 
-    fig.add_scatter(y=[0 for o in range(len(df))],
+    fig.add_scatter(y=[0] * len(df),
                     x=df[0],
                     line=dict(width=1, color='black'),
                     marker=dict(size=1),

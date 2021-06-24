@@ -1,12 +1,10 @@
 import pandas as pd
 
 from oit_stsb.calendar_data import get_calendar_data
-from oit_stsb.load_cfg import engine
-
-df_staff = pd.read_excel(r'assets/Список сотрудников ОИТСЦБ.xlsx')
+from oit_stsb.load_cfg import conn_string
 
 
-def load_data(table, **kwargs):
+def load_data(table, connection_string, **kwargs):
     """
     Синтаксис:
     ----------
@@ -26,7 +24,7 @@ def load_data(table, **kwargs):
                     SELECT * 
                     FROM {table}
                     WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
-                """, con=engine)
+                """, con=connection_string)
         return df
     if len(kwargs) == 2:
         df = pd.read_sql(f"""
@@ -35,7 +33,7 @@ def load_data(table, **kwargs):
                     WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
                     AND closed_month = {kwargs['month']}
                     AND closed_year = {kwargs['year']}
-                """, con=engine)
+                """, con=connection_string)
         return df
     if kwargs['enq_field']:
         df = pd.read_sql(f"""
@@ -44,8 +42,12 @@ def load_data(table, **kwargs):
                         WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
                         AND extract(month from {kwargs['enq_field']}) = {kwargs['month']}
                         AND extract(year from {kwargs['enq_field']}) = {kwargs['year']}
-                    """, con=engine)
+                    """, con=connection_string)
         return df
+
+
+def load_staff(connection_string):
+    return pd.read_sql('''SELECT * FROM oitstsb_staff''', con=connection_string)
 
 
 def get_period_month(year, month):
@@ -114,14 +116,15 @@ def set_periods(df):
 
 def make_main_table(table_name, month, year, column):
     df = load_data(table=table_name,
+                   connection_string=conn_string,
                    month=month,
                    year=year,
                    enq_field='solve_date')
-    merged_df = df.merge(df_staff,
+    merged_df = df.merge(load_staff(connection_string=conn_string),
                          left_on='specialist',
-                         right_on='ФИО',
+                         right_on='fio',
                          how='left')
-    merged_df.drop('ФИО', axis=1, inplace=True)
+    merged_df.drop('fio', axis=1, inplace=True)
     merged_df.reset_index(inplace=True)
     merged_df['delta'] = merged_df['solve_date'] - merged_df['reg_date']
 
