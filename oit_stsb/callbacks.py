@@ -7,8 +7,6 @@ import oit_stsb.figures
 import oit_stsb.staff
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l
 
-reset_count = 0
-
 
 def register_callbacks(app):
     @app.callback(
@@ -31,11 +29,15 @@ def register_callbacks(app):
 
         month, year = value.split('_')
 
-        data_df = oit_stsb.make_main_table(table_name=table_name, month=month, year=year, column='region')
+        data_df = oit_stsb.make_main_table(table_name=table_name,
+                                           month=month,
+                                           year=year,
+                                           column='region')
 
         columns = oit_stsb.set_columns()
 
-        total_task_pie_g = oit_stsb.figures.total_tasks_pie(df=data_df.loc[:len(data_df) - 2], colors=colors)
+        total_task_pie_g = oit_stsb.figures.total_tasks_pie(df=data_df.loc[:len(data_df) - 2],
+                                                            colors=colors)
 
         inc_close_wo_3l = oit_stsb.figures.make_bars(df=data_df.loc[:len(data_df) - 2],
                                                      column=4,
@@ -78,14 +80,16 @@ def register_callbacks(app):
                                                                              title=oit_stsb.load_cfg.
                                                                              mean_count_tasks_per_empl_per_day_title)
 
-        staff_data_df = oit_stsb.staff.make_staff_table(table_name=table_name, month=month, year=year)
+        staff_data_df = oit_stsb.staff.make_staff_table(table_name=table_name,
+                                                        month=month,
+                                                        year=year)
 
         if click:
             if form_filter[0] and form_filter[1]:
-                staff_data_df = staff_data_df[staff_data_df[form_filter[0]-1].isin(form_filter[1])]
-            print(form_filter)
+                staff_data_df = staff_data_df[staff_data_df[form_filter[0] - 1].isin(form_filter[1])]
 
-        staff_data_columns = oit_stsb.staff.set_staff_columns()
+        staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
+                                                                                                column=2))
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
                 inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,

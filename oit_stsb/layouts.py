@@ -21,7 +21,7 @@ def serve_layout():
         dcc.Location(id='url',
                      refresh=True),
         html.Div([
-            html.H2('Отдел информационно-технического сопровождения центральной бухгалтерии'),
+            html.H2('Отдел информационно-технического сопровождения централизованной бухгалтерии'),
             html.A([
                 html.Img(src="assets/logo.png")
             ], href='#modal-1', className='js-modal-open link')
@@ -92,7 +92,7 @@ def serve_layout():
                                                                                   'column_id': 4},
                                                                            'backgroundColor': 'tomato',
                                                                            'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{4}} > 70',
+                                                                          {'if': {'filter_query': f'{{4}} >= 70',
                                                                                   'column_id': 4},
                                                                            'backgroundColor': '#c4fbdb'},
                                                                           {'if': {
@@ -104,7 +104,7 @@ def serve_layout():
                                                                                   'column_id': 6},
                                                                            'backgroundColor': 'tomato',
                                                                            'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{6}} > 85',
+                                                                          {'if': {'filter_query': f'{{6}} >= 85',
                                                                                   'column_id': 6},
                                                                            'backgroundColor': '#c4fbdb'},
                                                                           {'if': {
@@ -116,7 +116,7 @@ def serve_layout():
                                                                                   'column_id': 8},
                                                                            'backgroundColor': 'tomato',
                                                                            'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{8}} < 10',
+                                                                          {'if': {'filter_query': f'{{8}} <= 10',
                                                                                   'column_id': 8},
                                                                            'backgroundColor': '#c4fbdb'},
                                                                           {'if': {
@@ -124,14 +124,14 @@ def serve_layout():
                                                                                   f'{{9}} < "30:" && {{9}} > "24:"',
                                                                               'column_id': 9},
                                                                               'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': '{9} < "24:"',
+                                                                          {'if': {'filter_query': '{9} <= "24:"',
                                                                                   'column_id': 9},
                                                                            'backgroundColor': '#c4fbdb'},
                                                                           {'if': {'filter_query': '{9} > "30"',
                                                                                   'column_id': 9},
                                                                            'backgroundColor': 'tomato',
                                                                            'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{12}} > 6',
+                                                                          {'if': {'filter_query': f'{{12}} >= 6',
                                                                                   'column_id': 12},
                                                                            'backgroundColor': '#c4fbdb'},
                                                                           {'if': {
@@ -223,6 +223,29 @@ def serve_layout():
                                                                           'textAlign': 'center',
                                                                           'backgroundColor': '#f0f8ff'
                                                                       },
+                                                                      style_data_conditional=[
+                                                                          {'if': {
+                                                                              'filter_query':
+                                                                                  f'{{2}} >= 150 && {{2}} <= 250',
+                                                                              'column_id': 2},
+                                                                              'backgroundColor': '#c4fbdb'},
+                                                                          {'if': {'filter_query': f'{{2}} < 150',
+                                                                                  'column_id': 2},
+                                                                           'backgroundColor': '#add2f8'},
+                                                                          {'if': {'filter_query': f'{{2}} > 250',
+                                                                                  'column_id': 2},
+                                                                           'backgroundColor': '#d5adfb'},
+                                                                      ],
+                                                                      tooltip_header={3: {
+                                                                          'value': """
+                                                                          Алгоритм расчета среднего значения:
+                                                                          1. Рассчитали квартили, и определили 
+                                                                          межквартильный размах
+                                                                          2. Убрали слишком большие и слишком малые 
+                                                                          значения (выбросы)
+                                                                          3. Рассчитали среднее на очищенных от выбросов
+                                                                           данных"""}},
+                                                                      tooltip_duration=None,
                                                                       sort_action='native',
                                                                       export_format='xlsx',
                                                                       filter_action='native',
