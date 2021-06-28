@@ -1,6 +1,7 @@
 import dash
 import pandas as pd
-from dash.dependencies import Output, Input, State
+import numpy as np
+from dash.dependencies import Output, Input
 
 import oit_stsb
 import oit_stsb.figures
@@ -22,10 +23,10 @@ def register_callbacks(app):
         Output('staff_table', 'columns'),
         Input('month_dd', 'value'),
         Input('choose_colorscheme', 'value'),
-        Input('filter_btn', 'n_clicks'),
-        State('form_filter', 'children')
+        # Input('filter_btn', 'n_clicks'),
+        # State('form_filter', 'children')
     )
-    def update_table(value, colors, click, form_filter):
+    def update_table(value, colors):
 
         month, year = value.split('_')
 
@@ -83,11 +84,6 @@ def register_callbacks(app):
         staff_data_df = oit_stsb.staff.make_staff_table(table_name=table_name,
                                                         month=month,
                                                         year=year)
-
-        if click:
-            if form_filter[0] and form_filter[1]:
-                staff_data_df = staff_data_df[staff_data_df[form_filter[0] - 1].isin(form_filter[1])]
-
         staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
                                                                                                 column=2))
 
@@ -105,26 +101,37 @@ def register_callbacks(app):
         staff_data_df = pd.DataFrame(data)
         staff_data_df.columns = [i for i in range(1, len(staff_data_df.columns) + 1)]
         if column:
-            sub_filter_options = [{'label': item, 'value': item} for item in staff_data_df[column].unique()]
+            sub_filter_options = [{'label': item, 'value': item} for item in np.sort(staff_data_df[column].unique())]
             return sub_filter_options
 
         return dash.no_update
 
     @app.callback(
-        Output('form_filter', 'children'),
+        Output('single_staff', 'data'),
+        Output('single_staff', 'columns'),
+        Output('div_staff_table', 'hidden'),
+        Output('div_single_staff', 'hidden'),
         Input('main_filter', 'value'),
-        Input('sub_filter', 'value')
+        Input('sub_filter', 'value'),
+        Input('staff_table', 'data'),
+        Input('filter_btn', 'n_clicks')
     )
-    def fill_form(column, text):
-        return [column, text]
-
-    @app.callback(
-        Output("url", "href"),
-        Output('main_tabs', 'value'),
-        Input('reset_btn', 'n_clicks'),
-        prevent_initial_call=True,
-    )
-    def reset_filter(click):
+    def fill_form(column, text, data_df, click):
+        df = pd.DataFrame(data_df)
+        mv = oit_stsb.staff.count_statistic(income_df=df,
+                                            column='2')
         if click:
-            return "/", 'staff'
-        return dash.no_update, dash.no_update
+            if column and text:
+                df = df[df[str(column-1)].isin(text)]
+                div_staff_table_hidden = True
+                div_single_staff = False
+            else:
+                div_staff_table_hidden = False
+                div_single_staff = True
+        else:
+            div_staff_table_hidden = False
+            div_single_staff = True
+
+        df_columns = oit_stsb.staff.set_staff_columns(mv=mv)
+
+        return df.to_dict('records'), df_columns, div_staff_table_hidden, div_single_staff

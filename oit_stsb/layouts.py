@@ -24,7 +24,9 @@ def serve_layout():
             html.H2('Отдел информационно-технического сопровождения централизованной бухгалтерии'),
             html.A([
                 html.Img(src="assets/logo.png")
-            ], href='#modal-1', className='js-modal-open link')
+            ],
+                href='#modal-1',
+                className='js-modal-open link')
         ], className='banner'),
         html.Div([
             html.Div([
@@ -39,7 +41,8 @@ def serve_layout():
                                  value=end_month[0]['value'],
                                  clearable=False,
                                  searchable=False)
-                ], className='wrapper-dropdown-3',
+                ],
+                    className='wrapper-dropdown-3',
                     style=dict(width='295px',
                                display='block')),
             ], className='bblock'),
@@ -57,8 +60,8 @@ def serve_layout():
                                  searchable=False)
                 ], className='colorscheme_dropdown'),
             ], className='bblock')
-
-        ], style=dict(background='#b1d5fa', height='55px')),
+        ], style=dict(background='#b1d5fa',
+                      height='55px')),
         html.Br(),
         html.Br(),
         html.Div([
@@ -71,7 +74,6 @@ def serve_layout():
                                      html.Div([
                                          dcc.Loading(
                                              id="loading-1",
-                                             # type="cube",
                                              fullscreen=True,
                                              children=html.Div([
                                                  dash_table.DataTable(id='main_table',
@@ -145,37 +147,50 @@ def serve_layout():
                                                                            'color': 'white'}
                                                                       ],
                                                                       export_format='xlsx')
-                                             ], style=dict(width='95%', padding='0 2.5%'))
+                                             ], style=dict(width='95%',
+                                                           padding='0 2.5%'))
                                          )
                                      ]),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='total_task_pie')
-                                         ], className='line_block', style=dict(width='40%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='40%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='inc_close_wo_3l')
-                                         ], className='line_block', style=dict(width='58%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='58%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='inc_wo_sla_violation')
-                                         ], className='line_block', style=dict(width='48%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='48%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='inc_back_work')
-                                         ], className='line_block', style=dict(width='48%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='mean_time_solve_wo_waiting')
-                                         ], className='line_block', style=dict(width='48%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='48%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='mean_count_tasks_per_empl_per_day')
-                                         ], className='line_block', style=dict(width='48%')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')),
                                  ],
@@ -193,67 +208,117 @@ def serve_layout():
                                                           clearable=False,
                                                           searchable=False,
                                                           placeholder="Выберите столбец",
-                                                          style=dict(width='200px', fontSize='16px'))
+                                                          style=dict(width='200px',
+                                                                     fontSize='16px'))
                                          ], className='bblock'),
                                          html.Div([
                                              dcc.Dropdown(id='sub_filter',
                                                           multi=True,
                                                           clearable=False,
                                                           searchable=False,
-                                                          style=dict(width='800px', fontSize='14px'))
+                                                          style=dict(width='800px',
+                                                                     fontSize='14px'))
                                          ], className='bblock'),
-                                         html.Div([html.Span(id='form_filter', hidden=True)], className='bblock'),
+                                         html.Div([html.Span(id='form_filter',
+                                                             hidden=True)], className='bblock'),
                                          html.Div([
-                                             html.Button('Применить фильтр', id='filter_btn')
+                                             html.Button('Применить фильтр',
+                                                         id='filter_btn')
                                          ], className='bblock'),
-                                         html.Div([
-                                             html.Button('Сбросить фильтр', id='reset_btn')
-                                         ], className='bblock')
-
                                      ]),
                                      html.Div([
                                          dcc.Loading(
                                              id='load_staff',
                                              fullscreen=True,
                                              children=html.Div([
-                                                 dash_table.DataTable(id='staff_table',
-                                                                      style_cell={
-                                                                          'whiteSpace': 'normal',
-                                                                          'height': 'auto',
-                                                                          'textAlign': 'center',
-                                                                          'backgroundColor': '#f0f8ff'
-                                                                      },
-                                                                      style_data_conditional=[
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{2}} >= 150 && {{2}} <= 250',
-                                                                              'column_id': 2},
-                                                                              'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {'filter_query': f'{{2}} < 150',
+                                                 html.Div([
+                                                     dash_table.DataTable(id='staff_table',
+                                                                          style_cell={
+                                                                              'whiteSpace': 'normal',
+                                                                              'height': 'auto',
+                                                                              'textAlign': 'center',
+                                                                              'backgroundColor': '#f0f8ff'
+                                                                          },
+                                                                          style_data_conditional=[
+                                                                              {'if': {
+                                                                                  'filter_query':
+                                                                                      f'{{2}} >= 150 && {{2}} <= 250',
                                                                                   'column_id': 2},
-                                                                           'backgroundColor': '#add2f8'},
-                                                                          {'if': {'filter_query': f'{{2}} > 250',
+                                                                                  'backgroundColor': '#c4fbdb'},
+                                                                              {'if': {'filter_query': f'{{2}} < 150',
+                                                                                      'column_id': 2},
+                                                                               'backgroundColor': '#add2f8'},
+                                                                              {'if': {'filter_query': f'{{2}} > 250',
+                                                                                      'column_id': 2},
+                                                                               'backgroundColor': '#d5adfb'},
+                                                                          ],
+                                                                          tooltip_header={3: {
+                                                                              'value': """Алгоритм расчета среднего 
+                                                                              значения: 
+                                                                              * Рассчитали квартили, и определили 
+                                                                              межквартильный размах 
+                                                                              * Убрали слишком большие и слишком малые 
+                                                                              значения (выбросы) 
+                                                                              * Рассчитали среднее на очищенных от 
+                                                                              выбросов данных""",
+                                                                              'type': 'markdown'}},
+                                                                          tooltip_duration=None,
+                                                                          sort_action='native',
+                                                                          export_format='xlsx',
+                                                                          # filter_action='native',
+                                                                          )
+                                                 ],
+                                                     style=dict(width='98%',
+                                                                padding='0 1%'),
+                                                     id='div_staff_table',
+                                                     ),
+                                                 html.Div([
+                                                     dash_table.DataTable(id='single_staff',
+                                                                          style_cell={
+                                                                              'whiteSpace': 'normal',
+                                                                              'height': 'auto',
+                                                                              'textAlign': 'center',
+                                                                              'backgroundColor': '#f0f8ff'
+                                                                          },
+                                                                          style_data_conditional=[
+                                                                              {'if': {
+                                                                                  'filter_query':
+                                                                                      f'{{2}} >= 150 && {{2}} <= 250',
                                                                                   'column_id': 2},
-                                                                           'backgroundColor': '#d5adfb'},
-                                                                      ],
-                                                                      tooltip_header={3: {
-                                                                          'value': """
-                                                                          Алгоритм расчета среднего значения:
-                                                                          1. Рассчитали квартили, и определили 
-                                                                          межквартильный размах
-                                                                          2. Убрали слишком большие и слишком малые 
-                                                                          значения (выбросы)
-                                                                          3. Рассчитали среднее на очищенных от выбросов
-                                                                           данных"""}},
-                                                                      tooltip_duration=None,
-                                                                      sort_action='native',
-                                                                      export_format='xlsx',
-                                                                      filter_action='native',
-                                                                      )
-                                             ], style=dict(width='98%', padding='0 1%'))
+                                                                                  'backgroundColor': '#c4fbdb'},
+                                                                              {'if': {'filter_query': f'{{2}} < 150',
+                                                                                      'column_id': 2},
+                                                                               'backgroundColor': '#add2f8'},
+                                                                              {'if': {'filter_query': f'{{2}} > 250',
+                                                                                      'column_id': 2},
+                                                                               'backgroundColor': '#d5adfb'},
+                                                                          ],
+                                                                          tooltip_header={3: {
+                                                                              'value': """Алгоритм расчета среднего 
+                                                                                  значения: 
+                                                                                  * Рассчитали квартили, и определили 
+                                                                                  межквартильный размах 
+                                                                                  * Убрали слишком большие и слишком 
+                                                                                  малые значения (выбросы) 
+                                                                                  * Рассчитали среднее на очищенных от 
+                                                                                  выбросов данных""",
+                                                                              'type': 'markdown'}},
+                                                                          tooltip_duration=None,
+                                                                          export_format='xlsx',
+                                                                          # filter_action='native'
+                                                                          )
+                                                 ],
+                                                     style=dict(width='98%',
+                                                                padding='0 1%'),
+                                                     id='div_single_staff')
+                                             ]),
                                          )
                                      ])
                                  ],
+                                 selected_style=tab_selected_style),
+                         dcc.Tab(label='Персонал',
+                                 value='employee',
+                                 children=[],
                                  selected_style=tab_selected_style)
                      ],
                      colors=dict(border='#ebecf1',
