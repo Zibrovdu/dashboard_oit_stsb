@@ -142,3 +142,8 @@ media screen and (max-width: 650px) {
      height: 50px;
      padding: 10px;
     }
+
+.dash_tables {
+    width: 98%;
+    padding: 0 1%
+    }

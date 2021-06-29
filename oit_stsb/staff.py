@@ -23,6 +23,7 @@ def make_staff_table(table_name, month, year):
                             year=year,
                             enq_field='reg_date')
     df = df.groupby('specialist')['task_number'].count().reset_index()
+
     df.columns = ['specialist', 'tasks_receive']
 
     df3 = oit_stsb.load_data(table=table_name,
@@ -61,17 +62,17 @@ def make_staff_table(table_name, month, year):
     df[9] = df[9].fillna('00:00:00')
     df['specialist'] = df['specialist'].apply(lambda x: x.title())
 
-    for i in range(4, 9, 2):
-        df[10 + i] = df.apply(lambda row: "".join([str(row[i]), " (", str(row[i - 1]), ")"]),
-                              axis=1)
-        df.drop([i, i - 1],
-                axis=1,
-                inplace=True)
+    # for i in range(4, 9, 2):
+    #     df[10 + i] = df.apply(lambda row: "".join([str(row[i]), " (", str(row[i - 1]), ")"]),
+    #                           axis=1)
+    #     df.drop([i, i - 1],
+    #             axis=1,
+    #             inplace=True)
     df = df[df['works_w_tasks'] == 'y']
     df = df.sort_values(1, ascending=False)
     df['mean'] = df[1].apply(lambda x: x - count_statistic(income_df=df,
                                                            column=1))
-    df = df[['specialist', 'region', 1, 'mean', 'tasks_receive', 'task_number', 14, 16, 18, 9]]
+    df = df[['specialist', 'region', 1, 'mean', 'tasks_receive', 'task_number', 4, 6, 8, 9]]
 
     df.columns = [i for i in range(10)]
 

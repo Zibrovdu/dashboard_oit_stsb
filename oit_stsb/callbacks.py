@@ -21,10 +21,9 @@ def register_callbacks(app):
         Output('mean_count_tasks_per_empl_per_day', 'figure'),
         Output('staff_table', 'data'),
         Output('staff_table', 'columns'),
+        Output('store_staff_df', 'data'),
         Input('month_dd', 'value'),
-        Input('choose_colorscheme', 'value'),
-        # Input('filter_btn', 'n_clicks'),
-        # State('form_filter', 'children')
+        Input('choose_colorscheme', 'value')
     )
     def update_table(value, colors):
 
@@ -89,7 +88,7 @@ def register_callbacks(app):
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
                 inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,
-                staff_data_df.to_dict('records'), staff_data_columns
+                staff_data_df.to_dict('records'), staff_data_columns, staff_data_df.to_dict('records')
                 )
 
     @app.callback(
@@ -114,20 +113,15 @@ def register_callbacks(app):
         Input('main_filter', 'value'),
         Input('sub_filter', 'value'),
         Input('staff_table', 'data'),
-        Input('filter_btn', 'n_clicks')
     )
-    def fill_form(column, text, data_df, click):
+    def fill_form(column, text, data_df):
         df = pd.DataFrame(data_df)
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')
-        if click:
-            if column and text:
-                df = df[df[str(column-1)].isin(text)]
-                div_staff_table_hidden = True
-                div_single_staff = False
-            else:
-                div_staff_table_hidden = False
-                div_single_staff = True
+        if column and text:
+            df = df[df[str(column - 1)].isin(text)]
+            div_staff_table_hidden = True
+            div_single_staff = False
         else:
             div_staff_table_hidden = False
             div_single_staff = True
@@ -135,3 +129,24 @@ def register_callbacks(app):
         df_columns = oit_stsb.staff.set_staff_columns(mv=mv)
 
         return df.to_dict('records'), df_columns, div_staff_table_hidden, div_single_staff
+
+    @app.callback(
+        Output('person', 'options'),
+        Output('person', 'value'),
+        Output('person_table', 'data'),
+        Output('person_table', 'columns'),
+        Input('store_staff_df', 'data'),
+        Input('person', 'value')
+    )
+    def fill_person(data, person):
+        df = pd.DataFrame(data)
+        mv = oit_stsb.staff.count_statistic(income_df=df,
+                                            column='2')
+        options = [{'label': item, 'value': item} for item in np.sort(df['0'].unique())]
+        person_value = options[0]
+
+        person_df = df[df['0'] == person][['1', '2', '3', '4', '5', '6', '7', '8', '9']]
+
+        columns = oit_stsb.staff.set_staff_columns(mv=mv)[1:]
+
+        return options, person_value, person_df.to_dict('records'), columns
