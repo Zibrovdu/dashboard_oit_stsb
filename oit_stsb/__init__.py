@@ -114,7 +114,7 @@ def set_periods(df):
     return start_period
 
 
-def make_main_table(table_name, month, year, column):
+def make_main_table(table_name, month, year, column, month_work_days):
     df = load_data(table=table_name,
                    connection_string=conn_string,
                    month=month,
@@ -169,8 +169,7 @@ def make_main_table(table_name, month, year, column):
     result['staff'] = result[column].apply(
         lambda region: len(merged_df[merged_df[column] == region]['specialist'].unique()))
 
-    result['task_count'] = result.apply(lambda row: round(row['num'] / row['staff'] / get_calendar_data(month=month,
-                                                                                                        year=year), 2),
+    result['task_count'] = result.apply(lambda row: round(row['num'] / row['staff'] / month_work_days, 2),
                                         axis=1)
 
     result.loc[len(result)] = 'Итог:', result['num'].sum(), round(result['persent'].sum()), result['num2'].sum(), \
@@ -179,8 +178,7 @@ def make_main_table(table_name, month, year, column):
                               round(result['num4'].sum() / result['num2'].sum() * 100, 1), \
                               (result['num2'] * result['num5']).sum() / result['num2'].sum(), result['delta'].mean(), \
                               result['staff'].sum(), round(
-        result['num'].sum() / result['staff'].sum() / get_calendar_data(month=month,
-                                                                        year=year), 2)
+        result['num'].sum() / result['staff'].sum() / month_work_days, 2)
 
     result['delta'] = result['delta'].astype(str).apply(lambda delta: delta.split('.')[0])
     result['num5'] = pd.to_datetime(result['num5'], unit='h').dt.strftime('%H:%M:%S')
@@ -190,21 +188,22 @@ def make_main_table(table_name, month, year, column):
 
 
 def set_columns():
-    columns = [{'name': ['Регион', ''], 'id': 0},
-               {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', 'шт.', ''], 'id': 1},
-               {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', '%', ''], 'id': 2},
-               {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', 'шт.', 'Не менее 70%'], 'id': 3},
-               {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', '%', 'Не менее 70%'], 'id': 4},
-               {'name': ['Из них (п.2) Инциденты, без нарушение SLA', 'шт.', 'не менее 85%'], 'id': 5},
-               {'name': ['Из них (п.2) Инциденты, без нарушение SLA', '%', 'не менее 85%'], 'id': 6},
-               {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', 'шт.', 'Не более 10%'], 'id': 7},
-               {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', '%', 'Не более 10%'], 'id': 8},
-               {'name': ['Из них (п.2) Среднее время решения без учета ожидания', 'чч:мм:сс', 'Не более 24ч'], 'id': 9,
-                'type': 'datetime'},
-               {'name': ['Среднее время с момента регистрации обращения до момента выполнения',
-                         '(разница между датой регистрации и датой решения)', ''], 'id': 10},
-               {'name': ['Количество сотрудников', ], 'id': 11},
-               {'name': ['Среднее кол-во Инцидентов на сотрудника в день', 'шт.', 'Не менее 6 шт'], 'id': 12}]
+    columns = [
+        {'name': ['Регион', ''], 'id': 0},
+        {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', 'шт.', ''], 'id': 1},
+        {'name': ['Инциденты, закрытые сотрудником, из всего потока на 2Л', '%', ''], 'id': 2},
+        {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', 'шт.', 'Не менее 70%'], 'id': 3},
+        {'name': ['Из них (п.1) Иниденты, закрытые без участия 3Л', '%', 'Не менее 70%'], 'id': 4},
+        {'name': ['Из них (п.2) Инциденты, без нарушение SLA', 'шт.', 'не менее 85%'], 'id': 5},
+        {'name': ['Из них (п.2) Инциденты, без нарушение SLA', '%', 'не менее 85%'], 'id': 6},
+        {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', 'шт.', 'Не более 10%'], 'id': 7},
+        {'name': ['Из них (п.2) Инциденты, вернувшиеся на доработку', '%', 'Не более 10%'], 'id': 8},
+        {'name': ['Из них (п.2) Среднее время решения без учета ожидания', 'чч:мм:сс', 'Не более 24ч'], 'id': 9,
+         'type': 'datetime'},
+        {'name': ['Среднее время с момента регистрации обращения до момента выполнения',
+                  '(разница между датой регистрации и датой решения)', ''], 'id': 10},
+        {'name': ['Количество сотрудников', ], 'id': 11},
+        {'name': ['Среднее кол-во Инцидентов на сотрудника в день', 'шт.', 'Не менее 6 шт'], 'id': 12}]
     return columns
 
 
@@ -217,4 +216,4 @@ def read_history_data():
 
 
 def create_index_table(df):
-    return pd.DataFrame(range(1, len(df)+1), columns=['index'])
+    return pd.DataFrame(range(1, len(df) + 1), columns=['index'])

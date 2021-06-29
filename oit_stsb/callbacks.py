@@ -29,10 +29,14 @@ def register_callbacks(app):
 
         month, year = value.split('_')
 
+        month_work_days = oit_stsb.get_calendar_data(month=month,
+                                                     year=year)
+
         data_df = oit_stsb.make_main_table(table_name=table_name,
                                            month=month,
                                            year=year,
-                                           column='region')
+                                           column='region',
+                                           month_work_days=month_work_days)
 
         columns = oit_stsb.set_columns()
 
@@ -82,7 +86,8 @@ def register_callbacks(app):
 
         staff_data_df = oit_stsb.staff.make_staff_table(table_name=table_name,
                                                         month=month,
-                                                        year=year)
+                                                        year=year,
+                                                        month_work_days=month_work_days)
         staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
                                                                                                 column=2))
 

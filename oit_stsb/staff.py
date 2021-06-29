@@ -16,7 +16,7 @@ def count_statistic(income_df, column):
     return int(df[(df[column] > outlier_low) & (df[column] < outlier_high)].median().iloc[0])
 
 
-def make_staff_table(table_name, month, year):
+def make_staff_table(table_name, month, year, month_work_days):
     df = oit_stsb.load_data(table=table_name,
                             connection_string=conn_string,
                             month=month,
@@ -37,7 +37,8 @@ def make_staff_table(table_name, month, year):
     df2 = oit_stsb.make_main_table(table_name=table_name,
                                    month=month,
                                    year=year,
-                                   column='specialist').drop([10, 11, 12], axis=1)
+                                   column='specialist',
+                                   month_work_days=month_work_days).drop([10, 11, 12], axis=1)
     df2 = df2.drop(len(df2) - 1)
     df = df.merge(df2,
                   left_on='specialist',
@@ -80,17 +81,17 @@ def make_staff_table(table_name, month, year):
 
 
 def set_staff_columns(mv):
-    columns = [{'name': ['ФИО сотрудника', ''], 'id': 0},
-               {'name': ['Регион', ''], 'id': 1},
-               {'name': ['Решено', 'шт.'], 'id': 2},
-               {'name': ['Отклонение', f'(Среднее {mv})'], 'id': 3},
-               {'name': ['В работе', 'шт.'], 'id': 4},
-               {'name': ['Поступило', 'шт.'], 'id': 5},
-               {'name': ['Иниденты, закрытые без участия 3Л', '% (шт.)', 'Не менее 70%'], 'id': 6},
-               {'name': ['Инциденты, без нарушение SLA', '% (шт.)', 'не менее 85%'], 'id': 7},
-               {'name': ['Инциденты, вернувшиеся на доработку', '% (шт.)', 'Не более 10%'], 'id': 8},
-               {'name': ['Среднее время решения без учета ожидания', 'чч:мм:сс', 'Не более 24ч'],
-                'id': 9}
-               ]
+    columns = [
+        {'name': ['ФИО сотрудника', ''], 'id': 0},
+        {'name': ['Регион', ''], 'id': 1},
+        {'name': ['Решено', 'шт.'], 'id': 2},
+        {'name': ['Отклонение', f'(Среднее {mv})'], 'id': 3},
+        {'name': ['В работе', 'шт.'], 'id': 4},
+        {'name': ['Поступило', 'шт.'], 'id': 5},
+        {'name': ['Иниденты, закрытые без участия 3Л, %', 'Не менее 70%'], 'id': 6},
+        {'name': ['Инциденты, без нарушение SLA, %', 'не менее 85%'], 'id': 7},
+        {'name': ['Инциденты, вернувшиеся на доработку, %', 'Не более 10%'], 'id': 8},
+        {'name': ['Среднее время решения без учета ожидания', 'чч:мм:сс, Не более 24ч'], 'id': 9}
+    ]
 
     return columns

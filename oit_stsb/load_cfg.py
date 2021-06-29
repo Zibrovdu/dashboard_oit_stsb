@@ -37,9 +37,13 @@ mean_count_tasks_per_empl_per_day = cfg_parser['SLA_params']['mean_count_tasks_p
 mean_count_tasks_per_empl_per_day_name = cfg_parser['names_scatters']['mean_count_tasks_per_empl_per_day_name']
 mean_count_tasks_per_empl_per_day_title = cfg_parser['titles']['mean_count_tasks_per_empl_per_day_title']
 
-color_schemes = dict(color0=['#007b00', '#24e0b8', '#ffcc51', '#ff8b76', '#ff3031', '#32bdf2'],
+color_schemes = dict(color0=['#007b00', '#24e0b8', '#ffcc51', '#ff8b76', '#ff3031', '#024f94'],
                      color1=['#ffd507', '#8da751', '#b2ceff', '#00a3e1', '#eccee2', '#f7528e'],
-                     color2=['#ff070e', '#ec8a38', '#ffc785', '#e7e6eb', '#3baf1d', '#85a1ca'],
+                     color2=['#ff070e', '#ec8a38', '#ffc785', '#e7e6eb', '#3baf1d', '#024f94'],
                      color3=['#ff6a00', '#ffb62a', '#65b016', '#9bd8da', '#9cb7bb', '#fa0088'],
                      color4=['#ffd901', '#ffbeae', '#ffade2', '#ff5682', '#f42439', '#28398d'],
-                     color5=['#d3e9f0', '#76bcf5', '#5889b2', '#69d6cc', '#bad996', '#fed21f'])
+                     color5=['#d3e9f0', '#76bcf5', '#5889b2', '#69d6cc', '#bad996', '#fed21f'],
+                     color6=['#490009', '#ac0e28', '#bc4558', '#013766', '#012e67', '#f8a73f'],
+                     color7=['#274b69', '#85a1c1', '#c6ccd8', '#3f4d63', '#012e67', '#f8a73f'],
+                     color8=['#012e67', '#323e53', '#408fb4', '#bddfef', '#64566e', 'tomato'],
+                     )

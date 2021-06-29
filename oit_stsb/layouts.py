@@ -295,14 +295,20 @@ def serve_layout():
                                                                                'color': 'white'},
                                                                           ],
                                                                           tooltip_header={3: {
-                                                                              'value': """Алгоритм расчета среднего 
-                                                                              значения: 
-                                                                              * Рассчитали квартили, и определили 
-                                                                              межквартильный размах 
-                                                                              * Убрали слишком большие и слишком малые 
-                                                                              значения (выбросы) 
-                                                                              * Рассчитали среднее на очищенных от 
-                                                                              выбросов данных""",
+                                                                              'value':
+                                                                                  """
+    Алгоритм расчета среднего значения: 
+    ==================================
+    
+    1. Рассчитали квартили, и определили 
+    межквартильный размах
+    
+    2. Убрали слишком большие и слишком малые 
+    значения (выбросы)
+     
+    3. Рассчитали среднее на очищенных от 
+    выбросов данных 
+                                                                                  """,
                                                                               'type': 'markdown'}},
                                                                           tooltip_duration=None,
                                                                           sort_action='native',
@@ -382,13 +388,18 @@ def serve_layout():
                                                                           ],
                                                                           tooltip_header={3: {
                                                                               'value':
-                                                                                  """Алгоритм расчета среднего значения: 
-                                                                                  * Рассчитали квартили, и определили 
-                                                                                  межквартильный размах 
-                                                                                  * Убрали слишком большие и слишком 
-                                                                                  малые значения (выбросы) 
-                                                                                  * Рассчитали среднее на очищенных от 
-                                                                                  выбросов данных""",
+                                                                                  """
+    Алгоритм расчета среднего значения:
+    ==================================
+    
+    1. Рассчитали квартили, и определили 
+    межквартильный размах
+    
+    2. Убрали слишком большие и слишком малые 
+    значения (выбросы)
+     
+    3. Рассчитали среднее на очищенных от 
+    выбросов данных                                                                """,
                                                                               'type': 'markdown'}},
                                                                           tooltip_duration=None,
                                                                           export_format='xlsx',
@@ -423,25 +434,79 @@ def serve_layout():
                                                               style_data_conditional=[
                                                                   {'if': {
                                                                       'filter_query':
-                                                                          f'{{2}} >= 150 && {{2}} <= 250',
+                                                                          f'{{3}} >= -30 && {{3}} <= 30',
                                                                       'column_id': 2},
                                                                       'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {'filter_query': f'{{2}} < 150',
+                                                                  {'if': {'filter_query': f'{{3}} < -30',
                                                                           'column_id': 2},
                                                                    'backgroundColor': '#add2f8'},
-                                                                  {'if': {'filter_query': f'{{2}} > 250',
+                                                                  {'if': {'filter_query': f'{{3}} > 30',
                                                                           'column_id': 2},
                                                                    'backgroundColor': '#d5adfb'},
+                                                                  {'if': {
+                                                                      'filter_query':
+                                                                          f'{{6}} >= 60 && {{6}} < 70',
+                                                                      'column_id': 6},
+                                                                      'backgroundColor': '#fcb500'},
+                                                                  {'if': {'filter_query': f'{{6}} < 60',
+                                                                          'column_id': 6},
+                                                                   'backgroundColor': 'tomato',
+                                                                   'color': 'white'},
+                                                                  {'if': {'filter_query': f'{{6}} >= 70',
+                                                                          'column_id': 6},
+                                                                   'backgroundColor': '#c4fbdb'},
+                                                                  {'if': {
+                                                                      'filter_query':
+                                                                          f'{{7}} >= 75 && {{7}} < 85',
+                                                                      'column_id': 7},
+                                                                      'backgroundColor': '#fcb500'},
+                                                                  {'if': {'filter_query': f'{{7}} < 75',
+                                                                          'column_id': 7},
+                                                                   'backgroundColor': 'tomato',
+                                                                   'color': 'white'},
+                                                                  {'if': {'filter_query': f'{{7}} >= 85',
+                                                                          'column_id': 7},
+                                                                   'backgroundColor': '#c4fbdb'},
+                                                                  {'if': {
+                                                                      'filter_query':
+                                                                          f'{{8}} > 10 && {{8}} <= 15',
+                                                                      'column_id': 8},
+                                                                      'backgroundColor': '#fcb500'},
+                                                                  {'if': {'filter_query': f'{{8}} > 15',
+                                                                          'column_id': 8},
+                                                                   'backgroundColor': 'tomato',
+                                                                   'color': 'white'},
+                                                                  {'if': {'filter_query': f'{{8}} <= 10',
+                                                                          'column_id': 8},
+                                                                   'backgroundColor': '#c4fbdb'},
+                                                                  {'if': {
+                                                                      'filter_query':
+                                                                          f'{{9}} <= "30:" && {{9}} >"24:"',
+                                                                      'column_id': 9},
+                                                                      'backgroundColor': '#fcb500'},
+                                                                  {'if': {'filter_query': '{9} <= "24:"',
+                                                                          'column_id': 9},
+                                                                   'backgroundColor': '#c4fbdb'},
+                                                                  {'if': {'filter_query': '{9} > "30"',
+                                                                          'column_id': 9},
+                                                                   'backgroundColor': 'tomato',
+                                                                   'color': 'white'},
                                                               ],
                                                               tooltip_header={3: {
-                                                                  'value': """
-                                                                  Алгоритм расчета среднего значения: 
-                                                                  * Рассчитали квартили, и определили межквартильный 
-                                                                  размах 
-                                                                  * Убрали слишком большие и слишком малые значения 
-                                                                  (выбросы) 
-                                                                  * Рассчитали среднее на очищенных от выбросов данных
-                                                                  """,
+                                                                  'value':
+                                                                      """
+    Алгоритм расчета среднего значения:
+    ================================== 
+    
+    1. Рассчитали квартили, и определили 
+    межквартильный размах
+    
+    2. Убрали слишком большие и слишком малые 
+    значения (выбросы)
+     
+    3. Рассчитали среднее на очищенных от 
+    выбросов данных
+                                                                      """,
                                                                   'type': 'markdown'}},
                                                               tooltip_duration=None,
                                                               )
