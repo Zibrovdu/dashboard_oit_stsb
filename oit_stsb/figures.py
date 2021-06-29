@@ -1,4 +1,7 @@
 import plotly.graph_objects as go
+import pandas as pd
+import numpy as np
+import datetime
 
 import oit_stsb.load_cfg
 
@@ -31,8 +34,8 @@ def make_bars(df, column, norma, colors, name, title):
     if column == 9:
         fig.add_bar(x=df[0],
                     y=df[column].apply(lambda time: round(int(time.split(':')[0]) +
-                                                          int(time.split(':')[1])/60 +
-                                                          int(time.split(':')[2])/3600, 2)),
+                                                          int(time.split(':')[1]) / 60 +
+                                                          int(time.split(':')[2]) / 3600, 2)),
                     marker_color=oit_stsb.load_cfg.color_schemes[colors][:len(df)],
                     showlegend=False,
                     name='')
@@ -73,4 +76,48 @@ def make_bars(df, column, norma, colors, name, title):
                       title=title,
                       title_xref='paper')
 
+    return fig
+
+
+def get_meat_count_tasks_per_day_df(table_name, conn_string, month, year):
+    df = oit_stsb.load_data(table_name, conn_string, month=month, year=year)
+    df.reg_date = pd.to_datetime(df.reg_date)
+    df['hours'] = df.reg_date.dt.hour
+    df = pd.DataFrame(
+        df[(df.reg_date >= datetime.datetime(2021, 5, 1)) & (df.reg_date < datetime.datetime(2021, 6, 1))].groupby(
+            'hours')['task_number'].count()).reset_index()
+
+    mask = df[df.hours.isin([x for x in range(2, 7)])].index
+    df.loc[mask, 'region'] = 'Владивосток'
+    mask = df[df.hours.isin([x for x in range(10, 13)])].index
+    df.loc[mask, 'region'] = 'Нижний новгород'
+    mask = df[df.hours.isin([x for x in range(13, 16)])].index
+    df.loc[mask, 'region'] = 'Владимир'
+    mask = df[df.hours.isin([x for x in range(15, 17)])].index
+    df.loc[mask, 'region'] = 'Москва'
+    mask = df[df.region.isna()].index
+    df.loc[mask, 'region'] = 'Новосибирск'
+
+    return df
+
+
+def plot_meat_count_tasks_per_day(df, colors):
+    regions_list = np.sort(df.region.unique()).tolist()
+
+    fig = go.Figure()
+
+    for num, region, in enumerate(regions_list):
+        fig.add_bar(x=df[df.region == region].hours,
+                    y=df[df.region == region]['task_number'],
+                    marker_color=oit_stsb.load_cfg.color_schemes[colors][num],
+                    text=df[df.region == region]['task_number'],
+                    showlegend=True,
+                    name='')
+        fig.update_traces(textposition='outside',
+                          hoverinfo="all")
+        fig.update_layout(uniformtext_minsize=8,
+                          uniformtext_mode='hide',
+                          paper_bgcolor='#ebecf1',
+                          title=oit_stsb.load_cfg.mean_count_tasks_per_day_title,
+                          title_xref='paper')
     return fig

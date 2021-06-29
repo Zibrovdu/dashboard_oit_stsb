@@ -63,12 +63,6 @@ def make_staff_table(table_name, month, year, month_work_days):
     df[9] = df[9].fillna('00:00:00')
     df['specialist'] = df['specialist'].apply(lambda x: x.title())
 
-    # for i in range(4, 9, 2):
-    #     df[10 + i] = df.apply(lambda row: "".join([str(row[i]), " (", str(row[i - 1]), ")"]),
-    #                           axis=1)
-    #     df.drop([i, i - 1],
-    #             axis=1,
-    #             inplace=True)
     df = df[df['works_w_tasks'] == 'y']
     df = df.sort_values(1, ascending=False)
     df['mean'] = df[1].apply(lambda x: x - count_statistic(income_df=df,
@@ -82,16 +76,16 @@ def make_staff_table(table_name, month, year, month_work_days):
 
 def set_staff_columns(mv):
     columns = [
-        {'name': ['ФИО сотрудника', ''], 'id': 0},
-        {'name': ['Регион', ''], 'id': 1},
-        {'name': ['Решено', 'шт.'], 'id': 2},
-        {'name': ['Отклонение', f'(Среднее {mv})'], 'id': 3},
-        {'name': ['В работе', 'шт.'], 'id': 4},
-        {'name': ['Поступило', 'шт.'], 'id': 5},
-        {'name': ['Иниденты, закрытые без участия 3Л, %', 'Не менее 70%'], 'id': 6},
-        {'name': ['Инциденты, без нарушение SLA, %', 'не менее 85%'], 'id': 7},
-        {'name': ['Инциденты, вернувшиеся на доработку, %', 'Не более 10%'], 'id': 8},
-        {'name': ['Среднее время решения без учета ожидания', 'чч:мм:сс, Не более 24ч'], 'id': 9}
+        dict(name=['ФИО сотрудника', ''], id=0),
+        dict(name=['Регион', ''], id=1),
+        dict(name=['Решено', 'шт.'], id=2),
+        dict(name=['Отклонение', f'(Среднее {mv})'], id=3),
+        dict(name=['В работе', 'шт.'], id=4),
+        dict(name=['Поступило', 'шт.'], id=5),
+        dict(name=['Иниденты, закрытые без участия 3Л, %', 'Не менее 70%'], id=6),
+        dict(name=['Инциденты, без нарушение SLA, %', 'не менее 85%'], id=7),
+        dict(name=['Инциденты, вернувшиеся на доработку, %', 'Не более 10%'], id=8),
+        dict(name=['Среднее время решения без учета ожидания', 'чч:мм:сс, Не более 24ч'], id=9)
     ]
 
     return columns

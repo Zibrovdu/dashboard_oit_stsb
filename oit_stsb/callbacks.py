@@ -6,7 +6,7 @@ from dash.dependencies import Output, Input
 import oit_stsb
 import oit_stsb.figures
 import oit_stsb.staff
-from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l
+from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
 
 
 def register_callbacks(app):
@@ -22,6 +22,7 @@ def register_callbacks(app):
         Output('staff_table', 'data'),
         Output('staff_table', 'columns'),
         Output('store_staff_df', 'data'),
+        Output('meat_count_tasks_per_day_graph', 'figure'),
         Input('month_dd', 'value'),
         Input('choose_colorscheme', 'value')
     )
@@ -37,6 +38,14 @@ def register_callbacks(app):
                                            year=year,
                                            column='region',
                                            month_work_days=month_work_days)
+
+        mean_count_tasks_df = oit_stsb.figures.get_meat_count_tasks_per_day_df(table_name=table_name,
+                                                                               conn_string=conn_string,
+                                                                               month=month,
+                                                                               year=year)
+
+        mean_count_tasks_graph = oit_stsb.figures.plot_meat_count_tasks_per_day(df=mean_count_tasks_df,
+                                                                                colors=colors)
 
         columns = oit_stsb.set_columns()
 
@@ -93,7 +102,8 @@ def register_callbacks(app):
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
                 inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,
-                staff_data_df.to_dict('records'), staff_data_columns, staff_data_df.to_dict('records')
+                staff_data_df.to_dict('records'), staff_data_columns, staff_data_df.to_dict('records'),
+                mean_count_tasks_graph
                 )
 
     @app.callback(

@@ -159,10 +159,16 @@ def serve_layout():
                                              style=dict(width='40%')
                                          ),
                                          html.Div([
-                                             dcc.Graph(id='inc_close_wo_3l')
+                                             dcc.Graph(id='meat_count_tasks_per_day_graph')
                                          ],
                                              className='line_block',
                                              style=dict(width='58%')
+                                         ),
+                                         html.Div([
+                                             dcc.Graph(id='inc_close_wo_3l')
+                                         ],
+                                             className='line_block',
+                                             style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')),
                                      html.Div([

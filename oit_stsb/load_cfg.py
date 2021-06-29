@@ -36,6 +36,7 @@ mean_time_solve_wo_waiting_title = cfg_parser['titles']['mean_time_solve_wo_wait
 mean_count_tasks_per_empl_per_day = cfg_parser['SLA_params']['mean_count_tasks_per_empl_per_day']
 mean_count_tasks_per_empl_per_day_name = cfg_parser['names_scatters']['mean_count_tasks_per_empl_per_day_name']
 mean_count_tasks_per_empl_per_day_title = cfg_parser['titles']['mean_count_tasks_per_empl_per_day_title']
+mean_count_tasks_per_day_title = cfg_parser['titles']['mean_count_tasks_per_day']
 
 color_schemes = dict(color0=['#007b00', '#24e0b8', '#ffcc51', '#ff8b76', '#ff3031', '#024f94'],
                      color1=['#ffd507', '#8da751', '#b2ceff', '#00a3e1', '#eccee2', '#f7528e'],
