@@ -1,6 +1,5 @@
 import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
 import datetime
 
 import oit_stsb.load_cfg
@@ -80,12 +79,14 @@ def make_bars(df, column, norma, colors, name, title):
 
 
 def get_meat_count_tasks_per_day_df(table_name, conn_string, month, year):
+    count_month_days = oit_stsb.calendar_data.count_month_days(month=month, year=year)
     df = oit_stsb.load_data(table_name, conn_string, month=month, year=year)
     df.reg_date = pd.to_datetime(df.reg_date)
     df['hours'] = df.reg_date.dt.hour
-    df = pd.DataFrame(
-        df[(df.reg_date >= datetime.datetime(2021, 5, 1)) & (df.reg_date < datetime.datetime(2021, 6, 1))].groupby(
-            'hours')['task_number'].count()).reset_index()
+
+    df = pd.DataFrame(df[(df.reg_date >= datetime.datetime(int(year), int(month), 1)) &
+                         (df.reg_date <= datetime.datetime(int(year), int(month), count_month_days))].groupby('hours')
+                      ['task_number'].count()).reset_index()
 
     mask = df[df.hours.isin([x for x in range(2, 7)])].index
     df.loc[mask, 'region'] = 'Владивосток'
@@ -102,7 +103,10 @@ def get_meat_count_tasks_per_day_df(table_name, conn_string, month, year):
 
 
 def plot_meat_count_tasks_per_day(df, colors):
-    regions_list = np.sort(df.region.unique()).tolist()
+    if not colors:
+        colors = ['#09280a', '#446b04', '#e1c1b7', '#b05449', '#dbb238', 'tomato']
+
+    regions_list = sorted(df.region.unique().tolist())
 
     fig = go.Figure()
 
@@ -111,7 +115,7 @@ def plot_meat_count_tasks_per_day(df, colors):
                     y=df[df.region == region]['task_number'],
                     marker_color=oit_stsb.load_cfg.color_schemes[colors][num],
                     text=df[df.region == region]['task_number'],
-                    showlegend=True,
+                    showlegend=False,
                     name='')
         fig.update_traces(textposition='outside',
                           hoverinfo="all")

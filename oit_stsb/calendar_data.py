@@ -1,7 +1,7 @@
 import requests
 
 
-def get_calendar_data(month, year):
+def count_month_work_days(month, year):
 
     response = requests.get(f'https://isdayoff.ru/api/getdata?year={year}&month={month}')
     count_work_days = 0
@@ -10,3 +10,8 @@ def get_calendar_data(month, year):
             if int(day) == 0:
                 count_work_days += 1
     return count_work_days
+
+
+def count_month_days(month, year):
+    response = requests.get(f'https://isdayoff.ru/api/getdata?year={year}&month={month}')
+    return int(len(str(response.text)))

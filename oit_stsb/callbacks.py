@@ -30,8 +30,8 @@ def register_callbacks(app):
 
         month, year = value.split('_')
 
-        month_work_days = oit_stsb.get_calendar_data(month=month,
-                                                     year=year)
+        month_work_days = oit_stsb.count_month_work_days(month=month,
+                                                         year=year)
 
         data_df = oit_stsb.make_main_table(table_name=table_name,
                                            month=month,
@@ -147,7 +147,6 @@ def register_callbacks(app):
 
     @app.callback(
         Output('person', 'options'),
-        Output('person', 'value'),
         Output('person_table', 'data'),
         Output('person_table', 'columns'),
         Input('store_staff_df', 'data'),
@@ -158,10 +157,9 @@ def register_callbacks(app):
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')
         options = [{'label': item, 'value': item} for item in np.sort(df['0'].unique())]
-        person_value = options[0]
 
         person_df = df[df['0'] == person][['1', '2', '3', '4', '5', '6', '7', '8', '9']]
 
         columns = oit_stsb.staff.set_staff_columns(mv=mv)[1:]
 
-        return options, person_value, person_df.to_dict('records'), columns
+        return options, person_df.to_dict('records'), columns

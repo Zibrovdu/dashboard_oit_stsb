@@ -1,6 +1,6 @@
 import pandas as pd
 
-from oit_stsb.calendar_data import get_calendar_data
+from oit_stsb.calendar_data import count_month_work_days
 from oit_stsb.load_cfg import conn_string
 
 
@@ -213,7 +213,3 @@ def read_history_data():
         for line in history_text_file:
             history_data += line
         return history_data
-
-
-def create_index_table(df):
-    return pd.DataFrame(range(1, len(df) + 1), columns=['index'])

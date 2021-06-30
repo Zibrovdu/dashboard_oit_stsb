@@ -222,6 +222,7 @@ def serve_layout():
                                                           multi=True,
                                                           clearable=True,
                                                           searchable=False,
+                                                          placeholder='< Сначала выберите столбец для фильтрации',
                                                           style=dict(width='800px',
                                                                      fontSize='14px'))
                                          ], className='bblock'),
@@ -426,7 +427,8 @@ def serve_layout():
                                      html.Div([
                                          dcc.Dropdown(id='person',
                                                       clearable=False,
-                                                      searchable=False)
+                                                      searchable=False,
+                                                      placeholder='Выберите сотрудника')
                                      ], style=dict(width='300px',
                                                    fontSize='14px', padding='1%')),
                                      html.Div([
