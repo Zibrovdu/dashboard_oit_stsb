@@ -4,3 +4,5 @@
 /__pycache__
 /oit_stsb/__pycache__
 *.rkz
+/oitscb_venv
+*.ini
