@@ -47,7 +47,7 @@ def load_data(table, connection_string, **kwargs):
 
 
 def load_staff(connection_string):
-    return pd.read_sql('''SELECT * FROM oitstsb_staff''', con=connection_string)
+    return pd.read_sql('''SELECT * FROM oitscb_staff''', con=connection_string)
 
 
 def get_period_month(year, month):
