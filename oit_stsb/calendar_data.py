@@ -2,7 +2,6 @@ import requests
 
 
 def count_month_work_days(month, year):
-
     response = requests.get(f'https://isdayoff.ru/api/getdata?year={year}&month={month}')
     count_work_days = 0
     if response.status_code == 200:

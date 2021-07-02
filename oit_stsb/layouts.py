@@ -254,6 +254,17 @@ def serve_layout():
                                                                                'backgroundColor': '#d5adfb'},
                                                                               {'if': {
                                                                                   'filter_query':
+                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
+                                                                                  'column_id': 3},
+                                                                                  'backgroundColor': '#c4fbdb'},
+                                                                              {'if': {'filter_query': f'{{3}} < -30',
+                                                                                      'column_id': 3},
+                                                                               'backgroundColor': '#add2f8'},
+                                                                              {'if': {'filter_query': f'{{3}} > 30',
+                                                                                      'column_id': 3},
+                                                                               'backgroundColor': '#d5adfb'},
+                                                                              {'if': {
+                                                                                  'filter_query':
                                                                                       f'{{6}} >= 60 && {{6}} < 70',
                                                                                   'column_id': 6},
                                                                                   'backgroundColor': '#fcb500'},
@@ -320,7 +331,6 @@ def serve_layout():
                                                                           tooltip_duration=None,
                                                                           sort_action='native',
                                                                           export_format='xlsx',
-                                                                          # filter_action='native',
                                                                           )
                                                  ], className='dash_tables', id='div_staff_table',
                                                  ),
@@ -343,6 +353,17 @@ def serve_layout():
                                                                                'backgroundColor': '#add2f8'},
                                                                               {'if': {'filter_query': f'{{3}} > 30',
                                                                                       'column_id': 2},
+                                                                               'backgroundColor': '#d5adfb'},
+                                                                              {'if': {
+                                                                                  'filter_query':
+                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
+                                                                                  'column_id': 3},
+                                                                                  'backgroundColor': '#c4fbdb'},
+                                                                              {'if': {'filter_query': f'{{3}} < -30',
+                                                                                      'column_id': 3},
+                                                                               'backgroundColor': '#add2f8'},
+                                                                              {'if': {'filter_query': f'{{3}} > 30',
+                                                                                      'column_id': 3},
                                                                                'backgroundColor': '#d5adfb'},
                                                                               {'if': {
                                                                                   'filter_query':
@@ -410,7 +431,6 @@ def serve_layout():
                                                                               'type': 'markdown'}},
                                                                           tooltip_duration=None,
                                                                           export_format='xlsx',
-                                                                          # filter_action='native'
                                                                           )
                                                  ], className='dash_tables', id='div_single_staff')
                                              ]),
@@ -450,6 +470,17 @@ def serve_layout():
                                                                    'backgroundColor': '#add2f8'},
                                                                   {'if': {'filter_query': f'{{3}} > 30',
                                                                           'column_id': 2},
+                                                                   'backgroundColor': '#d5adfb'},
+                                                                  {'if': {
+                                                                      'filter_query':
+                                                                          f'{{3}} >= -30 && {{3}} <= 30',
+                                                                      'column_id': 3},
+                                                                      'backgroundColor': '#c4fbdb'},
+                                                                  {'if': {'filter_query': f'{{3}} < -30',
+                                                                          'column_id': 3},
+                                                                   'backgroundColor': '#add2f8'},
+                                                                  {'if': {'filter_query': f'{{3}} > 30',
+                                                                          'column_id': 3},
                                                                    'backgroundColor': '#d5adfb'},
                                                                   {'if': {
                                                                       'filter_query':
