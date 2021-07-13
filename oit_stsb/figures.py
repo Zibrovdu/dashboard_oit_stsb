@@ -39,7 +39,7 @@ def make_bars(df, column, norma, colors, name, title):
                     showlegend=False,
                     name='')
         text_line = [str(data) for data in df[column]]
-        font_params = dict(color=oit_stsb.load_cfg.color_schemes[colors][len(df)], size=16)
+        font_params = dict(color=oit_stsb.load_cfg.color_schemes[colors][len(df)])
     else:
         fig.add_bar(x=df[0],
                     y=df[column],
@@ -47,7 +47,7 @@ def make_bars(df, column, norma, colors, name, title):
                     showlegend=False,
                     name='')
         text_line = [str(data) + '%' for data in df[column]]
-        font_params = dict(color=oit_stsb.load_cfg.color_schemes[colors][len(df)], size=20)
+        font_params = dict(color=oit_stsb.load_cfg.color_schemes[colors][len(df)])
 
     if column == 12:
         text_line = [str(data) for data in df[column]]

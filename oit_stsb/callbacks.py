@@ -6,6 +6,8 @@ from dash.dependencies import Output, Input
 import oit_stsb
 import oit_stsb.figures
 import oit_stsb.staff
+import oit_stsb.picture_day
+import oit_stsb.staff_plus
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
 
 
@@ -149,6 +151,10 @@ def register_callbacks(app):
         Output('person', 'options'),
         Output('person_table', 'data'),
         Output('person_table', 'columns'),
+        Output('difficult_level', 'data'),
+        Output('difficult_level', 'columns'),
+        Output('categories', 'data'),
+        Output('categories', 'columns'),
         Input('store_staff_df', 'data'),
         Input('person', 'value')
     )
@@ -162,4 +168,49 @@ def register_callbacks(app):
 
         columns = oit_stsb.staff.set_staff_columns(mv=mv)[1:]
 
-        return options, person_df.to_dict('records'), columns
+        difficult_df = oit_stsb.staff_plus.difficult_levels(mark='difficult')
+        difficult_df = difficult_df[difficult_df['specialist'] == person]
+        difficult_df_columns = oit_stsb.staff_plus.set_difficult_levels_columns()
+
+        categories_df = oit_stsb.staff_plus.difficult_levels(mark='categories')
+        categories_df = categories_df[categories_df['specialist'] == person]
+        categories_df_columns = oit_stsb.staff_plus.set_categories_columns()
+
+        return (options, person_df.to_dict('records'), columns,
+                difficult_df[['difficult', 'counts']].to_dict('records'), difficult_df_columns,
+                categories_df[['categories', 'counts']].to_dict('records'), categories_df_columns)
+
+    @app.callback(Output('picture_day_table', 'data'),
+                  Output('picture_day_table', 'columns'),
+                  Output('error_msg', 'children'),
+                  Output('error_msg', 'style'),
+                  Output('data_pic_day', 'children'),
+                  Input('upload_day_file', 'contents'),
+                  Input('upload_day_file', 'filename'))
+    def encrypt_file(contents, filename):
+        if contents is not None:
+            incoming_df = oit_stsb.picture_day.parse_contents_encrypt(contents=contents,
+                                                                      filename=filename)
+            msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
+            staff_df = oit_stsb.load_staff(connection_string=conn_string)
+
+            if len(incoming_df) > 0:
+                picture_day_df = oit_stsb.picture_day.make_table(content_df=incoming_df,
+                                                                 staff_df=staff_df)
+                style = oit_stsb.picture_day.set_styles(msg=msg)
+
+                date_picture_day = incoming_df['reg_date'].min().date().strftime("%d-%m-%Y")
+
+                return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns], msg,
+                        style, date_picture_day)
+
+            msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
+            picture_day_df = oit_stsb.picture_day.no_data()
+
+            style = oit_stsb.picture_day.set_styles(msg=msg)
+
+            return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns], msg,
+                    style, dash.no_update)
+
+        else:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update

@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash_table.Format
 
 import oit_stsb
+from oit_stsb.params import region_style, staff_style, mv_tooltip
 from oit_stsb.load_cfg import table_name, conn_string
 
 filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Регион'])]
@@ -42,9 +43,8 @@ def serve_layout():
                                  clearable=False,
                                  searchable=False)
                 ],
-                    className='wrapper-dropdown-3',
-                    style=dict(width='295px',
-                               display='block')),
+                    className='wrapper-dropdown-3'
+                ),
             ], className='bblock'),
             html.Div([
                 html.Div([
@@ -84,68 +84,7 @@ def serve_layout():
                                                                           'textAlign': 'center',
                                                                           'backgroundColor': '#f0f8ff'
                                                                       },
-                                                                      style_data_conditional=[
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{4}} > 60 && {{4}} < 70',
-                                                                              'column_id': 4},
-                                                                              'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': f'{{4}} < 60',
-                                                                                  'column_id': 4},
-                                                                           'backgroundColor': 'tomato',
-                                                                           'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{4}} >= 70',
-                                                                                  'column_id': 4},
-                                                                           'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{6}} > 75 && {{6}} < 85',
-                                                                              'column_id': 6},
-                                                                              'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': f'{{6}} < 75',
-                                                                                  'column_id': 6},
-                                                                           'backgroundColor': 'tomato',
-                                                                           'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{6}} >= 85',
-                                                                                  'column_id': 6},
-                                                                           'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{8}} > 10 && {{8}} < 15',
-                                                                              'column_id': 8},
-                                                                              'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': f'{{8}} > 15',
-                                                                                  'column_id': 8},
-                                                                           'backgroundColor': 'tomato',
-                                                                           'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{8}} <= 10',
-                                                                                  'column_id': 8},
-                                                                           'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{9}} < "30:" && {{9}} > "24:"',
-                                                                              'column_id': 9},
-                                                                              'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': '{9} <= "24:"',
-                                                                                  'column_id': 9},
-                                                                           'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {'filter_query': '{9} > "30"',
-                                                                                  'column_id': 9},
-                                                                           'backgroundColor': 'tomato',
-                                                                           'color': 'white'},
-                                                                          {'if': {'filter_query': f'{{12}} >= 6',
-                                                                                  'column_id': 12},
-                                                                           'backgroundColor': '#c4fbdb'},
-                                                                          {'if': {
-                                                                              'filter_query':
-                                                                                  f'{{12}} < 6 && {{12}} > 4',
-                                                                              'column_id': 12},
-                                                                              'backgroundColor': '#fcb500'},
-                                                                          {'if': {'filter_query': f'{{12}} < 4',
-                                                                                  'column_id': 12},
-                                                                           'backgroundColor': 'tomato',
-                                                                           'color': 'white'}
-                                                                      ],
+                                                                      style_data_conditional=region_style,
                                                                       export_format='xlsx')
                                              ], style=dict(width='95%',
                                                            padding='0 2.5%'))
@@ -240,94 +179,8 @@ def serve_layout():
                                                                               'textAlign': 'center',
                                                                               'backgroundColor': '#f0f8ff'
                                                                           },
-                                                                          style_data_conditional=[
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
-                                                                                  'column_id': 2},
-                                                                                  'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': f'{{3}} < -30',
-                                                                                      'column_id': 2},
-                                                                               'backgroundColor': '#add2f8'},
-                                                                              {'if': {'filter_query': f'{{3}} > 30',
-                                                                                      'column_id': 2},
-                                                                               'backgroundColor': '#d5adfb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
-                                                                                  'column_id': 3},
-                                                                                  'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': f'{{3}} < -30',
-                                                                                      'column_id': 3},
-                                                                               'backgroundColor': '#add2f8'},
-                                                                              {'if': {'filter_query': f'{{3}} > 30',
-                                                                                      'column_id': 3},
-                                                                               'backgroundColor': '#d5adfb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{6}} >= 60 && {{6}} < 70',
-                                                                                  'column_id': 6},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{6}} < 60',
-                                                                                      'column_id': 6},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{6}} >= 70',
-                                                                                      'column_id': 6},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{7}} >= 75 && {{7}} < 85',
-                                                                                  'column_id': 7},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{7}} < 75',
-                                                                                      'column_id': 7},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{7}} >= 85',
-                                                                                      'column_id': 7},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{8}} > 10 && {{8}} <= 15',
-                                                                                  'column_id': 8},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{8}} > 15',
-                                                                                      'column_id': 8},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{8}} <= 10',
-                                                                                      'column_id': 8},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{9}} <= "30:" && {{9}} >"24:"',
-                                                                                  'column_id': 9},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': '{9} <= "24:"',
-                                                                                      'column_id': 9},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': '{9} > "30"',
-                                                                                      'column_id': 9},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                          ],
-                                                                          tooltip_header={3: {
-                                                                              'value':
-                                                                                  """
-    Алгоритм расчета среднего значения: 
-    ==================================
-    
-    1. Рассчитали квартили, и определили 
-    межквартильный размах
-    
-    2. Убрали слишком большие и слишком малые 
-    значения (выбросы)
-     
-    3. Рассчитали среднее на очищенных от 
-    выбросов данных 
-                                                                                  """,
-                                                                              'type': 'markdown'}},
+                                                                          style_data_conditional=staff_style,
+                                                                          tooltip_header=mv_tooltip,
                                                                           tooltip_duration=None,
                                                                           sort_action='native',
                                                                           export_format='xlsx',
@@ -342,93 +195,8 @@ def serve_layout():
                                                                               'textAlign': 'center',
                                                                               'backgroundColor': '#f0f8ff'
                                                                           },
-                                                                          style_data_conditional=[
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
-                                                                                  'column_id': 2},
-                                                                                  'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': f'{{3}} < -30',
-                                                                                      'column_id': 2},
-                                                                               'backgroundColor': '#add2f8'},
-                                                                              {'if': {'filter_query': f'{{3}} > 30',
-                                                                                      'column_id': 2},
-                                                                               'backgroundColor': '#d5adfb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{3}} >= -30 && {{3}} <= 30',
-                                                                                  'column_id': 3},
-                                                                                  'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': f'{{3}} < -30',
-                                                                                      'column_id': 3},
-                                                                               'backgroundColor': '#add2f8'},
-                                                                              {'if': {'filter_query': f'{{3}} > 30',
-                                                                                      'column_id': 3},
-                                                                               'backgroundColor': '#d5adfb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{6}} >= 60 && {{6}} < 70',
-                                                                                  'column_id': 6},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{6}} < 60',
-                                                                                      'column_id': 6},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{6}} >= 70',
-                                                                                      'column_id': 6},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{7}} >= 75 && {{7}} < 85',
-                                                                                  'column_id': 7},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{7}} < 75',
-                                                                                      'column_id': 7},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{7}} >= 85',
-                                                                                      'column_id': 7},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{8}} > 10 && {{8}} <= 15',
-                                                                                  'column_id': 8},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': f'{{8}} > 15',
-                                                                                      'column_id': 8},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                              {'if': {'filter_query': f'{{8}} <= 10',
-                                                                                      'column_id': 8},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {
-                                                                                  'filter_query':
-                                                                                      f'{{9}} <= "30:" && {{9}} >"24:"',
-                                                                                  'column_id': 9},
-                                                                                  'backgroundColor': '#fcb500'},
-                                                                              {'if': {'filter_query': '{9} <= "24:"',
-                                                                                      'column_id': 9},
-                                                                               'backgroundColor': '#c4fbdb'},
-                                                                              {'if': {'filter_query': '{9} > "30"',
-                                                                                      'column_id': 9},
-                                                                               'backgroundColor': 'tomato',
-                                                                               'color': 'white'},
-                                                                          ],
-                                                                          tooltip_header={3: {
-                                                                              'value':
-                                                                                  """
-    Алгоритм расчета среднего значения:
-    ==================================
-    
-    1. Рассчитали квартили, и определили 
-    межквартильный размах
-    
-    2. Убрали слишком большие и слишком малые 
-    значения (выбросы)
-     
-    3. Рассчитали среднее на очищенных от 
-    выбросов данных                                                                """,
-                                                                              'type': 'markdown'}},
+                                                                          style_data_conditional=staff_style,
+                                                                          tooltip_header=mv_tooltip,
                                                                           tooltip_duration=None,
                                                                           export_format='xlsx',
                                                                           )
@@ -438,7 +206,7 @@ def serve_layout():
                                      ])
                                  ],
                                  selected_style=tab_selected_style),
-                         dcc.Tab(label='Персонал',
+                         dcc.Tab(label='Сотрудники +',
                                  value='employee',
                                  children=[
                                      html.Div([
@@ -459,97 +227,106 @@ def serve_layout():
                                                                   'textAlign': 'center',
                                                                   'backgroundColor': '#f0f8ff'
                                                               },
-                                                              style_data_conditional=[
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{3}} >= -30 && {{3}} <= 30',
-                                                                      'column_id': 2},
-                                                                      'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {'filter_query': f'{{3}} < -30',
-                                                                          'column_id': 2},
-                                                                   'backgroundColor': '#add2f8'},
-                                                                  {'if': {'filter_query': f'{{3}} > 30',
-                                                                          'column_id': 2},
-                                                                   'backgroundColor': '#d5adfb'},
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{3}} >= -30 && {{3}} <= 30',
-                                                                      'column_id': 3},
-                                                                      'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {'filter_query': f'{{3}} < -30',
-                                                                          'column_id': 3},
-                                                                   'backgroundColor': '#add2f8'},
-                                                                  {'if': {'filter_query': f'{{3}} > 30',
-                                                                          'column_id': 3},
-                                                                   'backgroundColor': '#d5adfb'},
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{6}} >= 60 && {{6}} < 70',
-                                                                      'column_id': 6},
-                                                                      'backgroundColor': '#fcb500'},
-                                                                  {'if': {'filter_query': f'{{6}} < 60',
-                                                                          'column_id': 6},
-                                                                   'backgroundColor': 'tomato',
-                                                                   'color': 'white'},
-                                                                  {'if': {'filter_query': f'{{6}} >= 70',
-                                                                          'column_id': 6},
-                                                                   'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{7}} >= 75 && {{7}} < 85',
-                                                                      'column_id': 7},
-                                                                      'backgroundColor': '#fcb500'},
-                                                                  {'if': {'filter_query': f'{{7}} < 75',
-                                                                          'column_id': 7},
-                                                                   'backgroundColor': 'tomato',
-                                                                   'color': 'white'},
-                                                                  {'if': {'filter_query': f'{{7}} >= 85',
-                                                                          'column_id': 7},
-                                                                   'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{8}} > 10 && {{8}} <= 15',
-                                                                      'column_id': 8},
-                                                                      'backgroundColor': '#fcb500'},
-                                                                  {'if': {'filter_query': f'{{8}} > 15',
-                                                                          'column_id': 8},
-                                                                   'backgroundColor': 'tomato',
-                                                                   'color': 'white'},
-                                                                  {'if': {'filter_query': f'{{8}} <= 10',
-                                                                          'column_id': 8},
-                                                                   'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {
-                                                                      'filter_query':
-                                                                          f'{{9}} <= "30:" && {{9}} >"24:"',
-                                                                      'column_id': 9},
-                                                                      'backgroundColor': '#fcb500'},
-                                                                  {'if': {'filter_query': '{9} <= "24:"',
-                                                                          'column_id': 9},
-                                                                   'backgroundColor': '#c4fbdb'},
-                                                                  {'if': {'filter_query': '{9} > "30"',
-                                                                          'column_id': 9},
-                                                                   'backgroundColor': 'tomato',
-                                                                   'color': 'white'},
-                                                              ],
-                                                              tooltip_header={3: {
-                                                                  'value':
-                                                                      """
-    Алгоритм расчета среднего значения:
-    ================================== 
-    
-    1. Рассчитали квартили, и определили 
-    межквартильный размах
-    
-    2. Убрали слишком большие и слишком малые 
-    значения (выбросы)
-     
-    3. Рассчитали среднее на очищенных от 
-    выбросов данных
-                                                                      """,
-                                                                  'type': 'markdown'}},
+                                                              style_data_conditional=staff_style,
+                                                              tooltip_header=mv_tooltip,
                                                               tooltip_duration=None,
                                                               )
-                                     ], className='dash_tables')
+                                     ], className='dash_tables'),
+                                     html.Div([
+                                         html.Div([
+                                             html.Label('Уровни сложности',
+                                                        className='label_difficult_levels')
+                                         ]),
+                                         html.Div([
+                                             dcc.Loading(id='load_difficult_level',
+                                                         fullscreen=False,
+                                                         children=[
+                                                             html.Div([
+                                                                 dash_table.DataTable(id='difficult_level',
+                                                                                      style_cell={
+                                                                                          'whiteSpace': 'normal',
+                                                                                          'height': 'auto',
+                                                                                          'textAlign': 'center',
+                                                                                          'backgroundColor': '#f0f8ff'
+                                                                                      },
+                                                                                      )
+                                                             ], className='table_difficult_levels')
+                                                         ]),
+                                         ]),
+                                     ], className='bblock'),
+                                     html.Div([
+                                         html.Div([
+                                             html.Label('Категории',
+                                                        className='label_categories_levels')
+                                         ]),
+                                         html.Div([
+                                             dcc.Loading(id='load_categories',
+                                                         fullscreen=False,
+                                                         children=[
+                                                             html.Div([
+                                                                 dash_table.DataTable(id='categories',
+                                                                                      style_cell={
+                                                                                          'whiteSpace': 'normal',
+                                                                                          'height': 'auto',
+                                                                                          'textAlign': 'center',
+                                                                                          'backgroundColor': '#f0f8ff'
+                                                                                      },
+                                                                                      )
+                                                             ], className='table_categories_levels')
+                                                         ]),
+                                         ])
+                                     ], className='bblock'),
+                                 ],
+                                 selected_style=tab_selected_style),
+                         dcc.Tab(label='Картина дня',
+                                 value='picture_day',
+                                 children=[
+                                     html.Div([
+                                         html.Div([
+                                             dcc.Upload(
+                                                 html.Button('Загрузить файл с данными'),
+                                                 id='upload_day_file',
+                                                 className='btn_load'),
+                                         ]),
+                                         html.Br(),
+                                         html.Div([
+                                             html.Div([
+                                                 html.Label('Дата'),
+                                             ], className='bblock'),
+                                             html.Div([
+                                                 html.Label(id='data_pic_day')
+                                             ], className='bblock'),
+                                             html.Div([
+                                                 html.Span(id='error_msg',
+                                                           className='labels_encrypt'),
+                                             ], className='bblock'),
+                                         ]),
+                                         html.Br(),
+                                         html.Div([
+                                             html.Div([
+                                                 html.Button(id='db_load_data',
+                                                             children='Load to db',
+                                                             hidden=True)
+                                             ], className='btn_load'),
+                                         ]),
+                                         html.Br(),
+                                         html.Div([
+                                             dcc.Loading(id='load_picture_day_table',
+                                                         children=[
+                                                             html.Div([
+                                                                 dash_table.DataTable(id='picture_day_table',
+                                                                                      style_cell={
+                                                                                          'whiteSpace': 'normal',
+                                                                                          'height': 'auto',
+                                                                                          'textAlign': 'center',
+                                                                                          'backgroundColor': '#f0f8ff'
+                                                                                      },
+                                                                                      export_format='xlsx')
+                                                             ], className='dash_tables')
+                                                         ])
+
+                                         ])
+                                     ])
                                  ],
                                  selected_style=tab_selected_style)
                      ],

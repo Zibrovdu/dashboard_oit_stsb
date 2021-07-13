@@ -8,6 +8,7 @@ body {
     margin: 0 auto;
     background-color: #1959d1;
     border-radius: 2px;
+    font-size: 2em;
 }
 
 .banner h2{
@@ -15,6 +16,7 @@ body {
     padding-top: 10px;
     margin-left: 2%;
     display: inline-block;
+    font-size: 1em;
 }
 
 .banner Img{
@@ -67,11 +69,11 @@ media screen and (max-width: 650px) {
     }
 
 .wrapper-dropdown-3 {
+    display: block;
     position: relative;
-    width: 290px;
+    width: 200px;
     margin: 0;
     padding: 0px;
-    font-weight: bold;
     color: #012e67;
 }
 .wrapper-dropdown-4 {
@@ -81,7 +83,6 @@ media screen and (max-width: 650px) {
     padding: 0px;
     background: #b1d5fa;
     border-radius: 1px;
-    font-weight: bold;
     color: #012e67;
 }
 
@@ -109,8 +110,8 @@ media screen and (max-width: 650px) {
 
 .label_colorscheme {
     position: relative;
-    width: 156px;
-    margin: 0px 0px 0px 500px;
+    width: 170px;
+    margin: 0px;
     padding: 0px;
     background: #b1d5fa;
     border-radius: 1px;
@@ -119,10 +120,10 @@ media screen and (max-width: 650px) {
 
 .colorscheme_dropdown {
     position: relative;
-    width: 250px;
+    width: 200px;
     margin: 0;
     padding: 0px;
-    font-size: 18px;
+    font-size: 14px;
     color: #012e67;
     }
 
@@ -140,3 +141,55 @@ media screen and (max-width: 650px) {
     width: 98%;
     padding: 0 1%
     }
+
+.btn_load {
+    width: 17%;
+    padding: 0 30px;
+}
+
+.labels_encrypt {
+    padding: 10px;
+}
+
+.export {
+    font-size: 12px;
+    visibility: hidden;
+}
+
+.export:after {
+      content:'Сохранить в формате excel';
+      visibility: visible;
+      position: absolute;
+      color: #1959d1;
+      border: 1px solid #1959d1;
+      border-radius: 5px;
+      padding: 0 30px;
+      margin: 0 0 10px -75px;
+
+}
+
+.label_difficult_levels {
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+.table_difficult_levels {
+    padding: 20px;
+    width: 300px;
+    font-size: 14px;
+
+}
+
+.label_categories_levels {
+    padding: 20px;
+    width: 800px;
+    text-align: center;
+}
+
+.table_categories_levels {
+    padding: 20px;
+    width: 800px;
+    font-size: 14px;
+
+}
