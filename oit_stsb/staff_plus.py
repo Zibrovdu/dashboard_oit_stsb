@@ -28,8 +28,11 @@ def difficult_levels(mark):
 
     df[mark] = df.analytics.apply(lambda row: get_difficult_level_and_categories(row=row, marks=mark))
 
-    df[mark] = df[mark].apply(lambda x: ','.join(x))
-    df[mark] = df[mark].apply(lambda x: 'Не указано' if x == '' else x)
+    if mark == 'difficult':
+        df[mark] = df[mark].apply(lambda x: x[len(x) - 1] if len(x) > 0 else 'Не указано')
+    else:
+        df[mark] = df[mark].apply(lambda x: ', '.join(x))
+        df[mark] = df[mark].apply(lambda x: 'Не указано' if x == '' else x)
 
     df_result = pd.DataFrame(df.groupby(['specialist', mark])[mark].count())
     df_result = df_result.rename(columns={mark: 'counts'}).reset_index()
@@ -51,3 +54,16 @@ def set_categories_columns():
         dict(name=['Количество обращений, шт.'], id='counts'),
     ]
     return columns
+
+
+def mean_difficult(df):
+    if len(df) == 0:
+        return 0
+
+    list_of_difficult_levels = []
+    for difficult_level in df:
+        if difficult_level.isdigit():
+            list_of_difficult_levels.append(int(difficult_level))
+    if len(list_of_difficult_levels) > 0:
+        return str(round(sum(list_of_difficult_levels)/len(list_of_difficult_levels), 2))
+    return 0

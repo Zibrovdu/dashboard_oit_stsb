@@ -155,6 +155,7 @@ def register_callbacks(app):
         Output('difficult_level', 'columns'),
         Output('categories', 'data'),
         Output('categories', 'columns'),
+        Output('mean_difficult', 'value'),
         Input('store_staff_df', 'data'),
         Input('person', 'value')
     )
@@ -176,41 +177,67 @@ def register_callbacks(app):
         categories_df = categories_df[categories_df['specialist'] == person]
         categories_df_columns = oit_stsb.staff_plus.set_categories_columns()
 
+        mean_difficult_level = oit_stsb.staff_plus.mean_difficult(df=difficult_df['difficult'])
+
         return (options, person_df.to_dict('records'), columns,
                 difficult_df[['difficult', 'counts']].to_dict('records'), difficult_df_columns,
-                categories_df[['categories', 'counts']].to_dict('records'), categories_df_columns)
+                categories_df[['categories', 'counts']].to_dict('records'), categories_df_columns, mean_difficult_level)
 
-    @app.callback(Output('picture_day_table', 'data'),
-                  Output('picture_day_table', 'columns'),
-                  Output('error_msg', 'children'),
-                  Output('error_msg', 'style'),
-                  Output('data_pic_day', 'children'),
-                  Input('upload_day_file', 'contents'),
-                  Input('upload_day_file', 'filename'))
-    def encrypt_file(contents, filename):
+    @app.callback(
+        Output('error_msg', 'children'),
+        Output('error_msg', 'style'),
+        Output('data_pic_day', 'children'),
+        Input('upload_day_file', 'contents'),
+        Input('upload_day_file', 'filename'))
+    def get_picture_day_table(contents, filename):
         if contents is not None:
-            incoming_df = oit_stsb.picture_day.parse_contents_encrypt(contents=contents,
-                                                                      filename=filename)
+            incoming_df = oit_stsb.picture_day.parse_load_file(contents=contents,
+                                                               filename=filename)
             msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
-            staff_df = oit_stsb.load_staff(connection_string=conn_string)
 
             if len(incoming_df) > 0:
-                picture_day_df = oit_stsb.picture_day.make_table(content_df=incoming_df,
-                                                                 staff_df=staff_df)
+                incoming_df.to_sql('picture_day', con=conn_string, if_exists='replace', index=False)
+
                 style = oit_stsb.picture_day.set_styles(msg=msg)
+                date_picture_day = oit_stsb.save_date(df=incoming_df, connection_string=conn_string)
 
-                date_picture_day = incoming_df['reg_date'].min().date().strftime("%d-%m-%Y")
-
-                return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns], msg,
-                        style, date_picture_day)
+                return msg, style, date_picture_day
 
             msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
-            picture_day_df = oit_stsb.picture_day.no_data()
 
             style = oit_stsb.picture_day.set_styles(msg=msg)
 
-            return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns], msg,
-                    style, dash.no_update)
+            return msg, style, dash.no_update
 
         else:
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+            return dash.no_update, dash.no_update, dash.no_update
+
+    @app.callback(
+        Output('picture_day_table', 'data'),
+        Output('picture_day_table', 'columns'),
+        Output('data_pic_day_label', 'children'),
+        Output('div_update_day_graph', 'style'),
+        Output('update_day', 'figure'),
+        Input('db_load_data', 'n_clicks'),
+        Input('choose_colorscheme_day', 'value')
+    )
+    def load_table_data(n_click, color_scheme):
+        if n_click:
+            incoming_df = oit_stsb.picture_day.load_day_df(connection_string=conn_string)
+            staff_df = oit_stsb.load_staff(connection_string=conn_string)
+            picture_day_df = oit_stsb.picture_day.make_table(content_df=incoming_df,
+                                                             staff_df=staff_df)
+
+            mean_count_tasks_df = oit_stsb.figures.meat_count_tasks_per_day(df=incoming_df)
+
+            picture_day_date = oit_stsb.load_date(connection_string=conn_string)
+            div_style = dict(opacity='1')
+            mean_count_tasks_graph = oit_stsb.figures.plot_meat_count_tasks_per_day(df=mean_count_tasks_df,
+                                                                                    colors=color_scheme,
+                                                                                    legend=True)
+
+            return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns],
+                    picture_day_date, div_style, mean_count_tasks_graph)
+
+        div_style = dict(opacity='0')
+        return dash.no_update, dash.no_update, dash.no_update, div_style, dash.no_update

@@ -102,7 +102,7 @@ def get_meat_count_tasks_per_day_df(table_name, conn_string, month, year):
     return df
 
 
-def plot_meat_count_tasks_per_day(df, colors):
+def plot_meat_count_tasks_per_day(df, colors, legend=False):
     if not colors:
         colors = ['#09280a', '#446b04', '#e1c1b7', '#b05449', '#dbb238', 'tomato']
 
@@ -115,13 +115,31 @@ def plot_meat_count_tasks_per_day(df, colors):
                     y=df[df.region == region]['task_number'],
                     marker_color=oit_stsb.load_cfg.color_schemes[colors][num],
                     text=df[df.region == region]['task_number'],
-                    showlegend=False,
-                    name='')
+                    showlegend=legend,
+                    name=region)
         fig.update_traces(textposition='outside',
                           hoverinfo="all")
         fig.update_layout(uniformtext_minsize=8,
+                          showlegend=legend,
                           uniformtext_mode='hide',
                           paper_bgcolor='#ebecf1',
                           title=oit_stsb.load_cfg.mean_count_tasks_per_day_title,
                           title_xref='paper')
     return fig
+
+
+def meat_count_tasks_per_day(df):
+    df['hours'] = df.reg_date.dt.hour
+    df = pd.DataFrame(df.groupby('hours')['task_number'].count()).reset_index()
+
+    mask = df[df.hours.isin([x for x in range(2, 7)])].index
+    df.loc[mask, 'region'] = 'Владивосток'
+    mask = df[df.hours.isin([x for x in range(10, 13)])].index
+    df.loc[mask, 'region'] = 'Нижний новгород'
+    mask = df[df.hours.isin([x for x in range(13, 16)])].index
+    df.loc[mask, 'region'] = 'Владимир'
+    mask = df[df.hours.isin([x for x in range(15, 17)])].index
+    df.loc[mask, 'region'] = 'Москва'
+    mask = df[df.region.isna()].index
+    df.loc[mask, 'region'] = 'Новосибирск'
+    return df

@@ -213,3 +213,15 @@ def read_history_data():
         for line in history_text_file:
             history_data += line
         return history_data
+
+
+def save_date(df, connection_string):
+
+    date_picture_day = pd.DataFrame([df['reg_date'].min().date().strftime("%d-%m-%Y")], columns=['update_date'])
+    date_picture_day.to_sql('date_picture_day', con=connection_string, if_exists='replace', index=False)
+    return date_picture_day.loc[0][0]
+
+
+def load_date(connection_string):
+    date_picture_day = pd.read_sql('date_picture_day', con=connection_string)
+    return date_picture_day.loc[0][0]

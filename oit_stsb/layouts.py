@@ -1,5 +1,6 @@
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_daq as daq
 import dash_table.Format
 
 import oit_stsb
@@ -73,9 +74,9 @@ def serve_layout():
                                  children=[
                                      html.Div([
                                          dcc.Loading(
-                                             id="loading-1",
-                                             fullscreen=True,
-                                             children=html.Div([
+                                             id="loading_main_table",
+                                             fullscreen=False,
+                                             children=[html.Div([
                                                  dash_table.DataTable(id='main_table',
                                                                       merge_duplicate_headers=True,
                                                                       style_cell={
@@ -87,9 +88,10 @@ def serve_layout():
                                                                       style_data_conditional=region_style,
                                                                       export_format='xlsx')
                                              ], style=dict(width='95%',
-                                                           padding='0 2.5%'))
+                                                           padding='0 2.5%'))]
                                          )
-                                     ]),
+                                     ]
+                                     ),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='total_task_pie')
@@ -109,7 +111,8 @@ def serve_layout():
                                              className='line_block',
                                              style=dict(width='48%')
                                          ),
-                                     ], style=dict(backgroundColor='#ebecf1')),
+                                     ], style=dict(backgroundColor='#ebecf1')
+                                     ),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='inc_wo_sla_violation')
@@ -123,7 +126,8 @@ def serve_layout():
                                              className='line_block',
                                              style=dict(width='48%')
                                          ),
-                                     ], style=dict(backgroundColor='#ebecf1')),
+                                     ], style=dict(backgroundColor='#ebecf1')
+                                     ),
                                      html.Div([
                                          html.Div([
                                              dcc.Graph(id='mean_time_solve_wo_waiting')
@@ -137,7 +141,8 @@ def serve_layout():
                                              className='line_block',
                                              style=dict(width='48%')
                                          ),
-                                     ], style=dict(backgroundColor='#ebecf1')),
+                                     ], style=dict(backgroundColor='#ebecf1')
+                                     ),
                                  ],
                                  selected_style=tab_selected_style),
                          dcc.Tab(label='Сотрудники',
@@ -169,7 +174,7 @@ def serve_layout():
                                      html.Div([
                                          dcc.Loading(
                                              id='load_staff',
-                                             fullscreen=True,
+                                             fullscreen=False,
                                              children=html.Div([
                                                  html.Div([
                                                      dash_table.DataTable(id='staff_table',
@@ -220,18 +225,24 @@ def serve_layout():
                                      ], style=dict(width='300px',
                                                    fontSize='14px', padding='1%')),
                                      html.Div([
-                                         dash_table.DataTable(id='person_table',
-                                                              style_cell={
-                                                                  'whiteSpace': 'normal',
-                                                                  'height': 'auto',
-                                                                  'textAlign': 'center',
-                                                                  'backgroundColor': '#f0f8ff'
-                                                              },
-                                                              style_data_conditional=staff_style,
-                                                              tooltip_header=mv_tooltip,
-                                                              tooltip_duration=None,
-                                                              )
-                                     ], className='dash_tables'),
+                                         dcc.Loading(id='person_table_loading',
+                                                     fullscreen=False,
+                                                     children=[
+                                                         html.Div([
+                                                             dash_table.DataTable(id='person_table',
+                                                                                  style_cell={
+                                                                                      'whiteSpace': 'normal',
+                                                                                      'height': 'auto',
+                                                                                      'textAlign': 'center',
+                                                                                      'backgroundColor': '#f0f8ff'
+                                                                                  },
+                                                                                  style_data_conditional=staff_style,
+                                                                                  tooltip_header=mv_tooltip,
+                                                                                  tooltip_duration=None,
+                                                                                  )
+                                                         ], className='dash_tables'),
+                                                     ])
+                                     ]),
                                      html.Div([
                                          html.Div([
                                              html.Label('Уровни сложности',
@@ -268,20 +279,96 @@ def serve_layout():
                                                                                       style_cell={
                                                                                           'whiteSpace': 'normal',
                                                                                           'height': 'auto',
-                                                                                          'textAlign': 'center',
+                                                                                          'textAlign': 'left',
                                                                                           'backgroundColor': '#f0f8ff'
                                                                                       },
+                                                                                      style_cell_conditional=[
+                                                                                          {'if':
+                                                                                               {'column_id': 'counts'},
+                                                                                           'textAlign': 'center'}
+                                                                                      ],
+                                                                                      style_header={
+                                                                                          'textAlign': 'center'
+                                                                                      }
                                                                                       )
                                                              ], className='table_categories_levels')
                                                          ]),
                                          ])
                                      ], className='bblock'),
+                                     html.Div([
+                                         html.Div([
+                                             html.Label('Средний уровень сложности', style=dict(padding='20px'))
+                                         ]),
+                                         html.Div([
+                                             daq.LEDDisplay(id='mean_difficult',
+                                                            value=0,
+                                                            backgroundColor="#ebecf1",
+                                                            color='#9baff1',
+                                                            style=dict(padding='20px'),
+                                                            size=64)
+
+                                         ])
+                                     ], className='bblock', style=dict(textAlign='center'))
                                  ],
                                  selected_style=tab_selected_style),
                          dcc.Tab(label='Картина дня',
                                  value='picture_day',
                                  children=[
                                      html.Div([
+                                         html.Br(),
+                                         html.Div([
+                                             html.Div([
+                                                 html.Button('Обновить',
+                                                             id='db_load_data')
+                                             ], className='btn_load'),
+                                         ], className='bblock'),
+                                         html.Div([
+                                             html.Div([
+                                                 html.Label('Актуализация данных'),
+                                             ], className='bblock'),
+                                             html.Div([
+                                                 html.Label(id='data_pic_day_label')
+                                             ], className='bblock'),
+                                         ], className='bblock'),
+                                         html.Div([
+                                             html.Div([
+                                                 html.Div([
+                                                     html.Label('Цветовая схема: '),
+                                                 ], className='label_colorscheme', style=dict(backgroundColor="#ebecf1"))
+                                             ], className='bblock'),
+                                             html.Div([
+                                                 html.Div([
+                                                     dcc.Dropdown(id='choose_colorscheme_day',
+                                                                  options=colors,
+                                                                  value=colors[0]['value'],
+                                                                  clearable=False,
+                                                                  searchable=False)
+                                                 ], className='colorscheme_dropdown'),
+                                             ], className='bblock')
+
+                                         ], className='bblock'),
+                                         html.Br(),
+                                         html.Div([
+                                             dcc.Loading(id='load_picture_day_table',
+                                                         children=[
+                                                             html.Div([
+                                                                 dash_table.DataTable(id='picture_day_table',
+                                                                                      style_cell={
+                                                                                          'whiteSpace': 'normal',
+                                                                                          'height': 'auto',
+                                                                                          'textAlign': 'center',
+                                                                                          'backgroundColor': '#f0f8ff'
+                                                                                      },
+                                                                                      export_format='xlsx')
+                                                             ], className='dash_tables')
+                                                         ])
+
+                                         ]),
+                                         html.Div([
+                                             dcc.Graph(id='update_day')
+                                         ],
+                                             id='div_update_day_graph',
+                                             style=dict(opacity='0', width='90%')),
                                          html.Div([
                                              dcc.Upload(
                                                  html.Button('Загрузить файл с данными'),
@@ -301,31 +388,6 @@ def serve_layout():
                                                            className='labels_encrypt'),
                                              ], className='bblock'),
                                          ]),
-                                         html.Br(),
-                                         html.Div([
-                                             html.Div([
-                                                 html.Button(id='db_load_data',
-                                                             children='Load to db',
-                                                             hidden=True)
-                                             ], className='btn_load'),
-                                         ]),
-                                         html.Br(),
-                                         html.Div([
-                                             dcc.Loading(id='load_picture_day_table',
-                                                         children=[
-                                                             html.Div([
-                                                                 dash_table.DataTable(id='picture_day_table',
-                                                                                      style_cell={
-                                                                                          'whiteSpace': 'normal',
-                                                                                          'height': 'auto',
-                                                                                          'textAlign': 'center',
-                                                                                          'backgroundColor': '#f0f8ff'
-                                                                                      },
-                                                                                      export_format='xlsx')
-                                                             ], className='dash_tables')
-                                                         ])
-
-                                         ])
                                      ])
                                  ],
                                  selected_style=tab_selected_style)

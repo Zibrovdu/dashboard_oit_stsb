@@ -13,7 +13,7 @@ def no_data():
     return df
 
 
-def parse_contents_encrypt(contents, filename):
+def parse_load_file(contents, filename):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     try:
@@ -38,60 +38,78 @@ def data_table(data_df, filename):
                       'Резолюция Решения Инцидента', 'Количество постановок Инцидента в Ожидание'],
                      axis=1,
                      inplace=True)
-        data_df.columns = ['task_number', 'reg_date', 'status', 'it-service', 'group', 'solve_date', 'specialist',
+        data_df.columns = ['task_number', 'reg_date', 'status', 'it-service', 'assign_group', 'solve_date', 'specialist',
                            'solve_date_2', 'is_sla', 'count_of_returns', 'work_time_solve', 'count_escalation_tasks']
         data_df.drop(0, inplace=True)
         data_df.reset_index(inplace=True)
         data_df.drop('index', inplace=True, axis=1)
-        lw.log_writer(log_msg=f'Файл "{filename}" успешно загружен')
+        lw.log_writer(log_msg=f'Файл "{filename}" успешно обработан')
 
         return data_df, 'Файл успешно загружен'
     except Exception as e:
-        lw.log_writer(log_msg=f'Ошибка при загрузки файла: "{filename}": {e}')
+        lw.log_writer(log_msg=f'Ошибка при обработке файла: "{filename}": {e}')
         lw.log_writer(log_msg=f'Неверный формат файла "{filename}"')
         data_df = no_data()
 
-        return data_df, "Ошибка при загрузки файла"
+        return data_df, "Ошибка при обработке файла"
 
 
 def make_table(content_df, staff_df):
+    staff_df.loc[105] = 'Не определено', 'Не определено', 'y', 'y'
     merged_df = content_df.merge(staff_df[['fio', 'region', 'works_w_tasks']],
                                  how='left',
                                  left_on='specialist',
                                  right_on='fio')
-
-    merged_df = merged_df[merged_df.group == 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)']
+    merged_df = merged_df[merged_df.assign_group == 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)']
     merged_df.drop('fio', axis=1, inplace=True)
 
-    picture_day_df = merged_df.pivot_table(index='region',
-                                           values='task_number',
-                                           aggfunc='count').reset_index()
-    picture_day_df = picture_day_df.merge(
-        merged_df[merged_df.solve_date.notna()].pivot_table(index='region',
-                                                            values='task_number',
-                                                            aggfunc='count').reset_index(),
-        on='region',
-        how='left')
-    picture_day_df = picture_day_df.merge(
-        merged_df[merged_df.solve_date.isna()].pivot_table(index='region',
-                                                           values='task_number',
-                                                           aggfunc='count').reset_index(),
-        on='region',
-        how='left')
-    picture_day_df = picture_day_df.merge(
-        merged_df.pivot_table(index='region',
-                              values='specialist',
-                              aggfunc=pd.Series.nunique).reset_index(),
-        on='region',
-        how='left')
+    if len(merged_df) == 0:
+        return pd.DataFrame(columns=['Регион', 'Количество обращений, взятых в работу',
+                                     'Количество обращений решенных на 2Л', 'Количество обращений в работе',
+                                     'Количество сотрудников', 'Количество возвратов',
+                                     'Среднее кол-во заявок на 1 сотрудника'])
 
-    picture_day_df = picture_day_df.merge(
-        merged_df[merged_df.count_of_returns > 0].pivot_table(
-            index='region',
-            values='count_of_returns',
-            aggfunc=np.sum).reset_index())
+    picture_day_df = merged_df.pivot_table(index='region', values='task_number', aggfunc='count').reset_index()
 
-    picture_day_df['average'] = round(picture_day_df['task_number_x'] / picture_day_df['specialist'], 2)
+    if len(merged_df[merged_df.solve_date.notna()]) == 0:
+        picture_day_df['solved_tasks'] = 0
+    else:
+        picture_day_df = picture_day_df.merge(merged_df[merged_df.solve_date.notna()].pivot_table(index='region',
+                                                                                                  values='task_number',
+                                                                                                  aggfunc='count').
+                                              rename(columns={'task_number': 'solved_tasks'}).reset_index(),
+                                              on='region',
+                                              how='left')
+    if len(merged_df[merged_df.solve_date.isna()]) == 0:
+        picture_day_df['in_work_task'] = 0
+    else:
+        picture_day_df = picture_day_df.merge(merged_df[merged_df.solve_date.isna()].pivot_table(index='region',
+                                                                                                 values='task_number',
+                                                                                                 aggfunc='count').
+                                              rename(columns={'task_number': 'in_work_task'}).reset_index(),
+                                              on='region',
+                                              how='left')
+    picture_day_df = picture_day_df.merge(merged_df.pivot_table(index='region',
+                                                                values='specialist',
+                                                                aggfunc=pd.Series.nunique).reset_index(),
+                                          on='region',
+                                          how='left')
+    if len(merged_df[merged_df.count_of_returns > 0]) == 0:
+        picture_day_df['count_of_returns'] = 0
+    else:
+        picture_day_df = picture_day_df.merge(
+            merged_df[merged_df.count_of_returns > 0].pivot_table(index='region',
+                                                                  values='count_of_returns',
+                                                                  aggfunc=np.sum).reset_index(),
+            on='region',
+            how='left')
+
+    picture_day_df['average'] = round(picture_day_df['task_number'] / picture_day_df['specialist'], 2)
+
+    picture_day_df.fillna(0, inplace=True)
+
+    for column in [x for x in picture_day_df.columns if x != 'region' and x != 'average']:
+        picture_day_df[column] = picture_day_df[column].astype(int)
 
     picture_day_df.columns = ['Регион', 'Количество обращений, взятых в работу', 'Количество обращений решенных на 2Л',
                               'Количество обращений в работе', 'Количество сотрудников', 'Количество возвратов',
@@ -107,3 +125,6 @@ def set_styles(msg):
     return style
 
 
+def load_day_df(connection_string):
+    return pd.read_sql("""select * from picture_day where assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'""",
+                       con=connection_string)
