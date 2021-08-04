@@ -4,33 +4,24 @@ from oit_stsb.load_cfg import conn_string, table_name
 from oit_stsb import load_data
 
 
-def difficult_levels(mark):
+def difficult_levels(mark, month, year):
     if not mark:
         return pd.DataFrame()
 
     df = load_data(table=table_name,
-                   connection_string=conn_string, )
+                   connection_string=conn_string,
+                   month=month,
+                   year=year)
     df.analytics = df.analytics.fillna('')
     df.analytics = df.analytics.apply(lambda x: x.split(','))
 
-    def get_difficult_level_and_categories(row, marks):
-        difficult_list = []
-        categories_list = []
-        for analytics_list in row:
-            if analytics_list.strip().isdigit():
-                difficult_list.append(analytics_list.strip())
-            else:
-                categories_list.append(analytics_list.strip())
-        if marks == 'difficult':
-            return difficult_list
-        else:
-            return categories_list
-
-    df[mark] = df.analytics.apply(lambda row: get_difficult_level_and_categories(row=row, marks=mark))
-
     if mark == 'difficult':
+        df[mark] = df.analytics.apply(lambda row: [item for item in row if item.strip().isdigit()])
+        df[mark] = df[mark].apply(lambda x: [x[i].strip() for i in range(len(x))])
         df[mark] = df[mark].apply(lambda x: x[len(x) - 1] if len(x) > 0 else 'Не указано')
     else:
+        df[mark] = df.analytics.apply(lambda row: [item for item in row if not item.strip().isdigit()])
+        df[mark] = df[mark].apply(lambda x: [x[i].strip() for i in range(len(x))])
         df[mark] = df[mark].apply(lambda x: ', '.join(x))
         df[mark] = df[mark].apply(lambda x: 'Не указано' if x == '' else x)
 

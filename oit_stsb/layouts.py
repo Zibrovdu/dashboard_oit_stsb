@@ -190,7 +190,9 @@ def serve_layout():
                                                                           sort_action='native',
                                                                           export_format='xlsx',
                                                                           )
-                                                 ], className='dash_tables', id='div_staff_table',
+                                                 ],
+                                                     className='dash_tables',
+                                                     id='div_staff_table',
                                                  ),
                                                  html.Div([
                                                      dash_table.DataTable(id='single_staff',

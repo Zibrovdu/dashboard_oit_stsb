@@ -157,9 +157,11 @@ def register_callbacks(app):
         Output('categories', 'columns'),
         Output('mean_difficult', 'value'),
         Input('store_staff_df', 'data'),
-        Input('person', 'value')
+        Input('person', 'value'),
+        Input('month_dd', 'value')
     )
-    def fill_person(data, person):
+    def fill_person(data, person, month_year):
+        month, year = month_year.split('_')
         df = pd.DataFrame(data)
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')
@@ -169,11 +171,11 @@ def register_callbacks(app):
 
         columns = oit_stsb.staff.set_staff_columns(mv=mv)[1:]
 
-        difficult_df = oit_stsb.staff_plus.difficult_levels(mark='difficult')
+        difficult_df = oit_stsb.staff_plus.difficult_levels(mark='difficult', month=month, year=year)
         difficult_df = difficult_df[difficult_df['specialist'] == person]
         difficult_df_columns = oit_stsb.staff_plus.set_difficult_levels_columns()
 
-        categories_df = oit_stsb.staff_plus.difficult_levels(mark='categories')
+        categories_df = oit_stsb.staff_plus.difficult_levels(mark='categories', month=month, year=year)
         categories_df = categories_df[categories_df['specialist'] == person]
         categories_df_columns = oit_stsb.staff_plus.set_categories_columns()
 
