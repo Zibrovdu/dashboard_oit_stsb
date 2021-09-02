@@ -35,7 +35,7 @@ def load_data(table, connection_string, **kwargs):
                     AND closed_year = {kwargs['year']}
                 """, con=connection_string)
         return df
-    if kwargs['enq_field']:
+    if 'enq_field' in kwargs.keys():
         df = pd.read_sql(f"""
                         SELECT * 
                         FROM {table}
@@ -43,6 +43,16 @@ def load_data(table, connection_string, **kwargs):
                         AND extract(month from {kwargs['enq_field']}) = {kwargs['month']}
                         AND extract(year from {kwargs['enq_field']}) = {kwargs['year']}
                     """, con=connection_string)
+        return df
+    if 'person' in kwargs.keys():
+        df = pd.read_sql(f"""
+                    SELECT * 
+                    FROM {table}
+                    WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
+                    AND closed_month = {kwargs['month']}
+                    AND closed_year = {kwargs['year']}
+                    AND specialist = '{kwargs['person']}'
+                """, con=connection_string)
         return df
 
 

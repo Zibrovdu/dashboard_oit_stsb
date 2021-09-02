@@ -151,11 +151,10 @@ def register_callbacks(app):
         Output('person', 'options'),
         Output('person_table', 'data'),
         Output('person_table', 'columns'),
-        Output('difficult_level', 'data'),
-        Output('difficult_level', 'columns'),
         Output('categories', 'data'),
         Output('categories', 'columns'),
-        Output('mean_difficult', 'value'),
+        Output('subsystems', 'data'),
+        Output('subsystems', 'columns'),
         Input('store_staff_df', 'data'),
         Input('person', 'value'),
         Input('month_dd', 'value')
@@ -163,6 +162,7 @@ def register_callbacks(app):
     def fill_person(data, person, month_year):
         month, year = month_year.split('_')
         df = pd.DataFrame(data)
+
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')
         options = [{'label': item, 'value': item} for item in np.sort(df['0'].unique())]
@@ -171,19 +171,19 @@ def register_callbacks(app):
 
         columns = oit_stsb.staff.set_staff_columns(mv=mv)[1:]
 
-        difficult_df = oit_stsb.staff_plus.difficult_levels(mark='difficult', month=month, year=year)
-        difficult_df = difficult_df[difficult_df['specialist'] == person]
-        difficult_df_columns = oit_stsb.staff_plus.set_difficult_levels_columns()
+        categories_df = oit_stsb.staff_plus.build_category_table(month=month, year=year, person=person)
+        categories_df_columns = [{'name': i, 'id': i} for i in categories_df.columns]
 
-        categories_df = oit_stsb.staff_plus.difficult_levels(mark='categories', month=month, year=year)
-        categories_df = categories_df[categories_df['specialist'] == person]
-        categories_df_columns = oit_stsb.staff_plus.set_categories_columns()
+        if len(categories_df) > 0:
+            subs_df = pd.DataFrame(categories_df.groupby('Подсистема')['Средний уровень сложности'].mean().round(2)
+                                   ).reset_index()
+        else:
+            subs_df = pd.DataFrame(columns=['Подсистема', 'Средний уровень сложности'])
+        subs_df_columns = [{'name': i, 'id': i} for i in subs_df.columns]
 
-        mean_difficult_level = oit_stsb.staff_plus.mean_difficult(df=difficult_df['difficult'])
-
-        return (options, person_df.to_dict('records'), columns,
-                difficult_df[['difficult', 'counts']].to_dict('records'), difficult_df_columns,
-                categories_df[['categories', 'counts']].to_dict('records'), categories_df_columns, mean_difficult_level)
+        return (options, person_df.to_dict('records'), columns, categories_df.to_dict('records'), categories_df_columns,
+                subs_df.to_dict('records'), subs_df_columns
+                )
 
     @app.callback(
         Output('error_msg', 'children'),

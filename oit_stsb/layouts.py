@@ -1,6 +1,5 @@
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_daq as daq
 import dash_table.Format
 
 import oit_stsb
@@ -247,70 +246,62 @@ def serve_layout():
                                      ]),
                                      html.Div([
                                          html.Div([
-                                             html.Label('Уровни сложности',
-                                                        className='label_difficult_levels')
-                                         ]),
-                                         html.Div([
-                                             dcc.Loading(id='load_difficult_level',
-                                                         fullscreen=False,
-                                                         children=[
-                                                             html.Div([
-                                                                 dash_table.DataTable(id='difficult_level',
-                                                                                      style_cell={
-                                                                                          'whiteSpace': 'normal',
-                                                                                          'height': 'auto',
-                                                                                          'textAlign': 'center',
-                                                                                          'backgroundColor': '#f0f8ff'
-                                                                                      },
-                                                                                      )
-                                                             ], className='table_difficult_levels')
-                                                         ]),
-                                         ]),
+                                             dash_table.DataTable(
+                                                 id='categories',
+                                                 style_cell={
+                                                     'whiteSpace': 'normal',
+                                                     'height': 'auto',
+                                                     'textAlign': 'left',
+                                                     'backgroundColor': '#f0f8ff'
+                                                 },
+                                                 style_cell_conditional=[
+                                                     {
+                                                         'if':
+                                                             {
+                                                                 'column_id': ['Средний уровень сложности',
+                                                                               'Количество',
+                                                                               'в % от от общего количества']
+                                                             },
+                                                         'textAlign': 'center'
+                                                     }
+                                                 ],
+                                                 style_header={
+                                                     'textAlign': 'center'
+                                                 }
+                                             )
+                                         ],
+                                             className='table_categories_levels'
+                                         )
                                      ], className='bblock'),
                                      html.Div([
                                          html.Div([
-                                             html.Label('Категории',
-                                                        className='label_categories_levels')
-                                         ]),
-                                         html.Div([
-                                             dcc.Loading(id='load_categories',
-                                                         fullscreen=False,
-                                                         children=[
-                                                             html.Div([
-                                                                 dash_table.DataTable(id='categories',
-                                                                                      style_cell={
-                                                                                          'whiteSpace': 'normal',
-                                                                                          'height': 'auto',
-                                                                                          'textAlign': 'left',
-                                                                                          'backgroundColor': '#f0f8ff'
-                                                                                      },
-                                                                                      style_cell_conditional=[
-                                                                                          {'if':
-                                                                                               {'column_id': 'counts'},
-                                                                                           'textAlign': 'center'}
-                                                                                      ],
-                                                                                      style_header={
-                                                                                          'textAlign': 'center'
-                                                                                      }
-                                                                                      )
-                                                             ], className='table_categories_levels')
-                                                         ]),
-                                         ])
-                                     ], className='bblock'),
-                                     html.Div([
-                                         html.Div([
-                                             html.Label('Средний уровень сложности', style=dict(padding='20px'))
-                                         ]),
-                                         html.Div([
-                                             daq.LEDDisplay(id='mean_difficult',
-                                                            value=0,
-                                                            backgroundColor="#ebecf1",
-                                                            color='#9baff1',
-                                                            style=dict(padding='20px'),
-                                                            size=64)
-
-                                         ])
-                                     ], className='bblock', style=dict(textAlign='center'))
+                                             dash_table.DataTable(
+                                                 id='subsystems',
+                                                 style_cell={
+                                                     'whiteSpace': 'normal',
+                                                     'height': 'auto',
+                                                     'textAlign': 'left',
+                                                     'backgroundColor': '#f0f8ff'
+                                                 },
+                                                 style_cell_conditional=[
+                                                     {
+                                                         'if':
+                                                             {
+                                                                 'column_id': 'Средний уровень сложности'
+                                                             },
+                                                         'textAlign': 'center'
+                                                     }
+                                                 ],
+                                                 style_header={
+                                                     'textAlign': 'center'
+                                                 }
+                                             )
+                                         ],
+                                             className='table_subs_levels'
+                                         )
+                                     ],
+                                         className='bblock'
+                                     )
                                  ],
                                  selected_style=tab_selected_style),
                          dcc.Tab(label='Картина дня',
@@ -336,7 +327,8 @@ def serve_layout():
                                              html.Div([
                                                  html.Div([
                                                      html.Label('Цветовая схема: '),
-                                                 ], className='label_colorscheme', style=dict(backgroundColor="#ebecf1"))
+                                                 ], className='label_colorscheme',
+                                                     style=dict(backgroundColor="#ebecf1"))
                                              ], className='bblock'),
                                              html.Div([
                                                  html.Div([

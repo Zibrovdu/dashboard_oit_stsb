@@ -188,8 +188,12 @@ media screen and (max-width: 650px) {
 }
 
 .table_categories_levels {
-    padding: 20px;
-    width: 800px;
-    font-size: 14px;
-
+    padding: 20px 10px;
+    width: 1400px;
+    font-size: 12px;
+}
+.table_subs_levels {
+    padding: 20px 10px;
+    width: 340px;
+    font-size: 12px;
 }

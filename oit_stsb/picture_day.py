@@ -38,7 +38,8 @@ def data_table(data_df, filename):
                       'Резолюция Решения Инцидента', 'Количество постановок Инцидента в Ожидание'],
                      axis=1,
                      inplace=True)
-        data_df.columns = ['task_number', 'reg_date', 'status', 'it-service', 'assign_group', 'solve_date', 'specialist',
+        data_df.columns = ['task_number', 'reg_date', 'status', 'it-service', 'assign_group', 'solve_date',
+                           'specialist',
                            'solve_date_2', 'is_sla', 'count_of_returns', 'work_time_solve', 'count_escalation_tasks']
         data_df.drop(0, inplace=True)
         data_df.reset_index(inplace=True)
@@ -126,5 +127,10 @@ def set_styles(msg):
 
 
 def load_day_df(connection_string):
-    return pd.read_sql("""select * from picture_day where assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'""",
-                       con=connection_string)
+    return pd.read_sql(
+        """
+        SELECT * 
+        FROM picture_day 
+        WHERE assign_group = 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)'
+        """,
+        con=connection_string)
