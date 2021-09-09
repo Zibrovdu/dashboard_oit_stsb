@@ -267,7 +267,8 @@ def serve_layout():
                                                  ],
                                                  style_header={
                                                      'textAlign': 'center'
-                                                 }
+                                                 },
+                                                 export_format='xlsx'
                                              )
                                          ],
                                              className='table_categories_levels'

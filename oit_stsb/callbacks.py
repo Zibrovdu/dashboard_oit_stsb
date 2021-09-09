@@ -2,12 +2,14 @@ import dash
 import pandas as pd
 import numpy as np
 from dash.dependencies import Output, Input
+from flask import request
 
 import oit_stsb
 import oit_stsb.figures
 import oit_stsb.staff
 import oit_stsb.picture_day
 import oit_stsb.staff_plus
+import oit_stsb.log_writer as lw
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
 
 
@@ -29,6 +31,8 @@ def register_callbacks(app):
         Input('choose_colorscheme', 'value')
     )
     def update_table(value, colors):
+        username = request.authorization['username']
+        lw.log_writer(f'Пользователь {username} открыл вкладку "Главная"')
 
         month, year = value.split('_')
 
@@ -192,6 +196,7 @@ def register_callbacks(app):
         Input('upload_day_file', 'contents'),
         Input('upload_day_file', 'filename'))
     def get_picture_day_table(contents, filename):
+
         if contents is not None:
             incoming_df = oit_stsb.picture_day.parse_load_file(contents=contents,
                                                                filename=filename)

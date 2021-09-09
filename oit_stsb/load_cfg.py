@@ -48,3 +48,11 @@ color_schemes = dict(color0=['#007b00', '#24e0b8', '#ffcc51', '#ff8b76', '#ff303
                      color7=['#274b69', '#85a1c1', '#c6ccd8', '#3f4d63', '#012e67', '#f8a73f'],
                      color8=['#012e67', '#323e53', '#408fb4', '#bddfef', '#64566e', 'tomato'],
                      )
+user = cfg_parser['login']['user_name']
+passwd = cfg_parser['login']['password']
+
+user_1 = cfg_parser['login']['user_name_1']
+passwd_1 = cfg_parser['login']['password_1']
+
+credentials = {user: passwd, user_1: passwd_1}
+

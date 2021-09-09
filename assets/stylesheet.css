@@ -151,23 +151,6 @@ media screen and (max-width: 650px) {
     padding: 10px;
 }
 
-.export {
-    font-size: 12px;
-    visibility: hidden;
-}
-
-.export:after {
-      content:'Сохранить в формате excel';
-      visibility: visible;
-      position: absolute;
-      color: #1959d1;
-      border: 1px solid #1959d1;
-      border-radius: 5px;
-      padding: 0 30px;
-      margin: 0 0 10px -75px;
-
-}
-
 .label_difficult_levels {
     padding: 20px;
     width: 300px;
@@ -193,7 +176,31 @@ media screen and (max-width: 650px) {
     font-size: 12px;
 }
 .table_subs_levels {
-    padding: 20px 10px;
+    padding: 68px 10px;
     width: 340px;
     font-size: 12px;
 }
+
+.export {
+    font-size: 12px;
+    margin: 0px 0px 10px -10px;
+    visibility: hidden;
+}
+
+.export:after {
+      content:'Экспорт в excel';
+      visibility: visible;
+      position: absolute;
+      color: #1959d1;
+      border: 1px solid #1959d1;
+      border-radius: 5px;
+      padding: 0 30px;
+      margin: 0 0 10px -75px;
+
+}
+.export:hover {
+    background-color: #b1d5fa;
+}
+
+
+

@@ -7,4 +7,5 @@
 /oitscb_venv
 *.ini
 /logs
-
+/.cache/
+/.local/
