@@ -166,6 +166,7 @@ def register_callbacks(app):
     def fill_person(data, person, month_year):
         month, year = month_year.split('_')
         df = pd.DataFrame(data)
+        print(df)
 
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')

@@ -56,8 +56,13 @@ def load_data(table, connection_string, **kwargs):
         return df
 
 
-def load_staff(connection_string):
-    return pd.read_sql('''SELECT * FROM oitscb_staff''', con=connection_string)
+def load_staff(connection_string, **kwargs):
+    if 'works' in kwargs:
+        return pd.read_sql("""SELECT * FROM oitscb_staff where works_w_tasks = 'y' and state = 'y'""",
+                           con=connection_string)
+    else:
+        return pd.read_sql('''SELECT * FROM oitscb_staff''',
+                           con=connection_string)
 
 
 def get_period_month(year, month):

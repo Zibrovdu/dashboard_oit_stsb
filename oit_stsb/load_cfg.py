@@ -52,6 +52,7 @@ user = cfg_parser['login']['user_name']
 passwd = cfg_parser['login']['password']
 
 user_1 = cfg_parser['login']['user_name_1']
+user_1 = cfg_parser['login']['user_name_1']
 passwd_1 = cfg_parser['login']['password_1']
 
 credentials = {user: passwd, user_1: passwd_1}

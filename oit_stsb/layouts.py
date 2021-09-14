@@ -164,7 +164,7 @@ def serve_layout():
                                              dcc.Dropdown(id='sub_filter',
                                                           multi=True,
                                                           clearable=True,
-                                                          searchable=False,
+                                                          searchable=True,
                                                           placeholder='< Сначала выберите столбец для фильтрации',
                                                           style=dict(width='800px',
                                                                      fontSize='14px'))
@@ -221,7 +221,7 @@ def serve_layout():
                                      html.Div([
                                          dcc.Dropdown(id='person',
                                                       clearable=False,
-                                                      searchable=False,
+                                                      searchable=True,
                                                       placeholder='Выберите сотрудника')
                                      ], style=dict(width='300px',
                                                    fontSize='14px', padding='1%')),
