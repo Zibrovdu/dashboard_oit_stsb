@@ -103,6 +103,7 @@ def register_callbacks(app):
                                                         month=month,
                                                         year=year,
                                                         month_work_days=month_work_days)
+
         staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
                                                                                                 column=2))
 
@@ -166,7 +167,6 @@ def register_callbacks(app):
     def fill_person(data, person, month_year):
         month, year = month_year.split('_')
         df = pd.DataFrame(data)
-        print(df)
 
         mv = oit_stsb.staff.count_statistic(income_df=df,
                                             column='2')

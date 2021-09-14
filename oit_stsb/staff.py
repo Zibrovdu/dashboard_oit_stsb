@@ -8,10 +8,10 @@ def count_statistic(income_df, column):
     df = pd.DataFrame(income_df[column])
     df.sort_values(column, inplace=True)
 
-    irq = df[column].loc[int(len(df[column]) / 2):].median() - df[column].loc[:int(len(df[column]) / 2)].median()
+    irq = df[column].iloc[int(len(df[column]) / 2):].median() - df[column].iloc[:int(len(df[column]) / 2)].median()
 
-    outlier_low = (df[column].loc[:int(len(df[column]) / 2)].median()) - (1.5 * irq)
-    outlier_high = (df[column].loc[int(len(df[column]) / 2):].median()) + (1.5 * irq)
+    outlier_low = (df[column].iloc[:int(len(df[column]) / 2)].median()) - (1.5 * irq)
+    outlier_high = (df[column].iloc[int(len(df[column]) / 2):].median()) + (1.5 * irq)
 
     return int(df[(df[column] > outlier_low) & (df[column] < outlier_high)].median().iloc[0])
 
@@ -64,12 +64,16 @@ def make_staff_table(table_name, month, year, month_work_days):
     df['specialist'] = df['specialist'].apply(lambda x: x.title())
 
     df = df[df['works_w_tasks'] == 'y']
+
     df = df.sort_values(1, ascending=False)
+
     df['mean'] = df[1].apply(lambda x: x - count_statistic(income_df=df,
                                                            column=1))
+
     df = df[['specialist', 'region', 1, 'mean', 'tasks_receive', 'task_number', 4, 6, 8, 9]]
 
     df.columns = [i for i in range(10)]
+
 
     return df
 

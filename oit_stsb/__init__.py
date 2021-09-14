@@ -135,7 +135,7 @@ def make_main_table(table_name, month, year, column, month_work_days):
                    month=month,
                    year=year,
                    enq_field='solve_date')
-    merged_df = df.merge(load_staff(connection_string=conn_string),
+    merged_df = df.merge(load_staff(connection_string=conn_string, works='works'),
                          left_on='specialist',
                          right_on='fio',
                          how='left')
@@ -182,7 +182,8 @@ def make_main_table(table_name, month, year, column, month_work_days):
     result['delta'] = pd.to_timedelta(result['delta'].values.astype("timedelta64[s]"))
 
     result['staff'] = result[column].apply(
-        lambda region: len(merged_df[merged_df[column] == region]['specialist'].unique()))
+        lambda region: len(
+            merged_df[merged_df[column] == region]['specialist'].unique()))
 
     result['task_count'] = result.apply(lambda row: round(row['num'] / row['staff'] / month_work_days, 2),
                                         axis=1)
