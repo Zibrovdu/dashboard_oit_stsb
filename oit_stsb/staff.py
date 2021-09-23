@@ -23,7 +23,6 @@ def make_staff_table(table_name, month, year, month_work_days):
                             year=year,
                             enq_field='reg_date')
     df = df.groupby('specialist')['task_number'].count().reset_index()
-
     df.columns = ['specialist', 'tasks_receive']
 
     df3 = oit_stsb.load_data(table=table_name,
@@ -33,6 +32,8 @@ def make_staff_table(table_name, month, year, month_work_days):
                   on='specialist',
                   how='left')
     df[['tasks_receive', 'task_number']] = df[['tasks_receive', 'task_number']].fillna(0)
+
+    print(df)
 
     df2 = oit_stsb.make_main_table(table_name=table_name,
                                    month=month,

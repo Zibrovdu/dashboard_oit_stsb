@@ -202,5 +202,13 @@ media screen and (max-width: 650px) {
     background-color: #b1d5fa;
 }
 
-
+/* Когда ширина окна от 1100 пикселей, ширина  div-2 будет 900px */
+@media screen and (max-width: 1100px){
+        .table_subs_levels {
+            width: 300px;
+        }
+        .table_categories_levels {
+            width: 600px;+
+        }
+    }
 

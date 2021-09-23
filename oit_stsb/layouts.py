@@ -3,7 +3,7 @@ import dash_html_components as html
 import dash_table.Format
 
 import oit_stsb
-from oit_stsb.params import region_style, staff_style, mv_tooltip
+from oit_stsb.params import region_style, staff_style, tooltips
 from oit_stsb.load_cfg import table_name, conn_string
 
 filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Регион'])]
@@ -176,36 +176,44 @@ def serve_layout():
                                              fullscreen=False,
                                              children=html.Div([
                                                  html.Div([
-                                                     dash_table.DataTable(id='staff_table',
-                                                                          style_cell={
-                                                                              'whiteSpace': 'normal',
-                                                                              'height': 'auto',
-                                                                              'textAlign': 'center',
-                                                                              'backgroundColor': '#f0f8ff'
-                                                                          },
-                                                                          style_data_conditional=staff_style,
-                                                                          tooltip_header=mv_tooltip,
-                                                                          tooltip_duration=None,
-                                                                          sort_action='native',
-                                                                          export_format='xlsx',
-                                                                          )
+                                                     dash_table.DataTable(
+                                                         id='staff_table',
+                                                         style_cell={
+                                                             'whiteSpace': 'normal',
+                                                             'height': 'auto',
+                                                             'textAlign': 'center',
+                                                             'backgroundColor': '#f0f8ff'
+                                                         },
+                                                         style_data_conditional=staff_style,
+                                                         tooltip_header={
+                                                             3: {'value': tooltips['3_column'],
+                                                                 'type': 'markdown'}
+                                                         },
+                                                         tooltip_duration=None,
+                                                         sort_action='native',
+                                                         export_format='xlsx',
+                                                     )
                                                  ],
                                                      className='dash_tables',
                                                      id='div_staff_table',
                                                  ),
                                                  html.Div([
-                                                     dash_table.DataTable(id='single_staff',
-                                                                          style_cell={
-                                                                              'whiteSpace': 'normal',
-                                                                              'height': 'auto',
-                                                                              'textAlign': 'center',
-                                                                              'backgroundColor': '#f0f8ff'
-                                                                          },
-                                                                          style_data_conditional=staff_style,
-                                                                          tooltip_header=mv_tooltip,
-                                                                          tooltip_duration=None,
-                                                                          export_format='xlsx',
-                                                                          )
+                                                     dash_table.DataTable(
+                                                         id='single_staff',
+                                                         style_cell={
+                                                             'whiteSpace': 'normal',
+                                                             'height': 'auto',
+                                                             'textAlign': 'center',
+                                                             'backgroundColor': '#f0f8ff'
+                                                         },
+                                                         style_data_conditional=staff_style,
+                                                         tooltip_header={
+                                                             3: {'value': tooltips['3_column'],
+                                                                 'type': 'markdown'}
+                                                         },
+                                                         tooltip_duration=None,
+                                                         export_format='xlsx',
+                                                     )
                                                  ], className='dash_tables', id='div_single_staff')
                                              ]),
                                          )
@@ -230,17 +238,21 @@ def serve_layout():
                                                      fullscreen=False,
                                                      children=[
                                                          html.Div([
-                                                             dash_table.DataTable(id='person_table',
-                                                                                  style_cell={
-                                                                                      'whiteSpace': 'normal',
-                                                                                      'height': 'auto',
-                                                                                      'textAlign': 'center',
-                                                                                      'backgroundColor': '#f0f8ff'
-                                                                                  },
-                                                                                  style_data_conditional=staff_style,
-                                                                                  tooltip_header=mv_tooltip,
-                                                                                  tooltip_duration=None,
-                                                                                  )
+                                                             dash_table.DataTable(
+                                                                 id='person_table',
+                                                                 style_cell={
+                                                                     'whiteSpace': 'normal',
+                                                                     'height': 'auto',
+                                                                     'textAlign': 'center',
+                                                                     'backgroundColor': '#f0f8ff'
+                                                                 },
+                                                                 style_data_conditional=staff_style,
+                                                                 tooltip_header={
+                                                                     3: {'value': tooltips['3_column'],
+                                                                         'type': 'markdown'}
+                                                                 },
+                                                                 tooltip_duration=None,
+                                                             )
                                                          ], className='dash_tables'),
                                                      ])
                                      ]),

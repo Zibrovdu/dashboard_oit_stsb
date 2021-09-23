@@ -15,6 +15,9 @@ def no_data():
 
 def parse_load_file(contents, filename):
     content_type, content_string = contents.split(',')
+    with open('content.txt', 'w') as f:
+        f.write(contents)
+        f.close()
     decoded = base64.b64decode(content_string)
     try:
         content_df = pd.read_excel(io.BytesIO(decoded), skiprows=7)
