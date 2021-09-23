@@ -105,6 +105,7 @@ media screen and (max-width: 650px) {
         background: #ebecf1;
         float:left;
         margin: 15px 5px;
+        width: 48%;
 
         }
 
@@ -215,6 +216,9 @@ media screen and (max-width: 650px) {
             }
         .banner h2 {
             width: 720px;
+        }
+        .line_block {
+            width: 100%;
         }
         .modal-content {
             position: relative;

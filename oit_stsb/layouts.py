@@ -96,19 +96,19 @@ def serve_layout():
                                              dcc.Graph(id='total_task_pie')
                                          ],
                                              className='line_block',
-                                             style=dict(width='40%')
+                                             # style=dict(width='40%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='meat_count_tasks_per_day_graph')
                                          ],
                                              className='line_block',
-                                             style=dict(width='58%')
+                                             # style=dict(width='58%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='inc_close_wo_3l')
                                          ],
                                              className='line_block',
-                                             style=dict(width='48%')
+                                             # style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')
                                      ),
@@ -117,13 +117,13 @@ def serve_layout():
                                              dcc.Graph(id='inc_wo_sla_violation')
                                          ],
                                              className='line_block',
-                                             style=dict(width='48%')
+                                             # style=dict(width='48%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='inc_back_work')
                                          ],
                                              className='line_block',
-                                             style=dict(width='48%')
+                                             # style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')
                                      ),
@@ -132,13 +132,13 @@ def serve_layout():
                                              dcc.Graph(id='mean_time_solve_wo_waiting')
                                          ],
                                              className='line_block',
-                                             style=dict(width='48%')
+                                             # style=dict(width='48%')
                                          ),
                                          html.Div([
                                              dcc.Graph(id='mean_count_tasks_per_empl_per_day')
                                          ],
                                              className='line_block',
-                                             style=dict(width='48%')
+                                             # style=dict(width='48%')
                                          ),
                                      ], style=dict(backgroundColor='#ebecf1')
                                      ),
