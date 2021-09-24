@@ -33,8 +33,6 @@ def make_staff_table(table_name, month, year, month_work_days):
                   how='left')
     df[['tasks_receive', 'task_number']] = df[['tasks_receive', 'task_number']].fillna(0)
 
-    print(df)
-
     df2 = oit_stsb.make_main_table(table_name=table_name,
                                    month=month,
                                    year=year,
@@ -74,7 +72,6 @@ def make_staff_table(table_name, month, year, month_work_days):
     df = df[['specialist', 'region', 1, 'mean', 'tasks_receive', 'task_number', 4, 6, 8, 9]]
 
     df.columns = [i for i in range(10)]
-
 
     return df
 
