@@ -106,7 +106,14 @@ media screen and (max-width: 650px) {
         float:left;
         margin: 15px 5px;
         width: 48%;
+        }
 
+.line_block_kpi_table {
+        background: #ebecf1;
+        float:left;
+        height: 290px;
+        margin: 95px 26px;
+        width: 48%;
         }
 
 .label_colorscheme {

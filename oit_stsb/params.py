@@ -37,6 +37,20 @@ region_style = [
     {'if': {'filter_query': f'{{12}} < 4', 'column_id': 12}, 'backgroundColor': 'tomato', 'color': 'white'}
 ]
 
+kpi_style = {
+    'if': {
+        'column_id': 0
+    },
+    'textAlign': 'left'
+}
+
+kpi_style_big = {
+    'if': {
+        'column_id': 1
+    },
+    'textAlign': 'left'
+}
+
 tooltips = {
     '2_column':
         """
@@ -57,4 +71,8 @@ __Алгоритм расчета среднего значения:__
         """
 Количество открытых обращений закрытых сотрудником за выбранный период
     """,
+    'pd_2_column':
+    """
+    
+    """
 }

@@ -10,6 +10,7 @@ import oit_stsb.staff
 import oit_stsb.picture_day
 import oit_stsb.staff_plus
 import oit_stsb.log_writer as lw
+# import oit_stsb.kpi as kpi
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
 
 
@@ -236,6 +237,11 @@ def register_callbacks(app):
             picture_day_df = oit_stsb.picture_day.make_table(content_df=incoming_df,
                                                              staff_df=staff_df)
 
+            if len(picture_day_df.columns) > 6:
+                picture_day_df_columns = oit_stsb.picture_day.set_picture_day_columns()
+            else:
+                picture_day_df_columns = oit_stsb.picture_day.set_picture_day_columns_old()
+
             mean_count_tasks_df = oit_stsb.figures.meat_count_tasks_per_day(df=incoming_df)
 
             picture_day_date = oit_stsb.load_date(connection_string=conn_string)
@@ -244,8 +250,31 @@ def register_callbacks(app):
                                                                                     colors=color_scheme,
                                                                                     legend=True)
 
-            return (picture_day_df.to_dict('records'), [{'name': i, 'id': i} for i in picture_day_df.columns],
-                    picture_day_date, div_style, mean_count_tasks_graph)
+            return (picture_day_df.to_dict('records'), picture_day_df_columns, picture_day_date, div_style,
+                    mean_count_tasks_graph)
 
         div_style = dict(opacity='0')
         return dash.no_update, dash.no_update, dash.no_update, div_style, dash.no_update
+
+    # @app.callback(
+    #     Output('kpi_table', 'data'),
+    #     Output('kpi_table', 'columns'),
+    #     Output('kpi_small', 'data'),
+    #     Output('kpi_small', 'columns'),
+    #     Input('month_dd', 'value'),
+    # )
+    # def build_kpi_table(value):
+    #
+    #     month, year = value.split('_')
+    #
+    #     kpi_df = kpi.kpi_table(month=month, year=year, small=False)
+    #
+    #     kpi_df_columns = kpi.set_kpi_columns_big()
+    #
+    #     kpi_small_df = kpi.kpi_table(month=month, year=year, small=True)
+    #
+    #     kpi_small_df_columns = kpi.set_kpi_columns()
+    #
+    #     return (
+    #         kpi_df.to_dict('records'), kpi_df_columns, kpi_small_df.to_dict('records'), kpi_small_df_columns
+    #             )

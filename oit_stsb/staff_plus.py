@@ -1,8 +1,13 @@
 import pandas as pd
+from functools import reduce
 
 from oit_stsb.load_cfg import conn_string, table_name
 from oit_stsb import load_data
 import oit_stsb.category_lists as category_lists
+
+
+def bound_replace(string, old):
+    return string.replace(old, '')
 
 
 def mean_difficult(df):
@@ -18,12 +23,14 @@ def mean_difficult(df):
     return 0
 
 
-def build_category_table(month, year, person):
-    df = load_data(table=table_name,
-                   connection_string=conn_string,
-                   month=month,
-                   year=year)
+def parse_analytics(df, pic_day=False):
     df.analytics = df.analytics.fillna('')
+
+    if pic_day:
+        df.analytics = df.analytics.apply(
+            lambda x: reduce(bound_replace, ['>', '<', 'Сложность: ', 'Категория обращения: '], x))
+        df.analytics = df.analytics.apply(lambda x: x.replace(';', ', '))
+
     df.analytics = df.analytics.apply(lambda x: x.split(','))
 
     df['difficult'] = df.analytics.apply(lambda row: [item for item in row if item.strip().isdigit()])
@@ -35,16 +42,27 @@ def build_category_table(month, year, person):
     df['categories'] = df['categories'].apply(lambda x: [x[i].strip() for i in range(len(x))])
     df['categories'] = df['categories'].apply(lambda x: x[0] if len(x) > 0 else x)
     df['categories'] = df['categories'].apply(lambda x: '' if x == [] else x)
-    df['categories'] = df['categories'].apply(lambda x: 'Не указано' if x == '' else x)
+    df['categories'] = df['categories'].apply(lambda x: 'Не указано/Неверно указано' if x == '' else x)
 
     df['Subsystem'] = ''
-    df.loc[df[df['categories'].isin(category_lists.zkgu_list)].index, 'Subsystem'] = 'ЗКГУ'
-    df.loc[df[df['categories'].isin(category_lists.bgu_list)].index, 'Subsystem'] = 'БГУ'
+    df.loc[df[df['categories'].isin(category_lists.zkgu_list)].index, 'Subsystem'] = 'ПУОТ'
+    df.loc[df[df['categories'].isin(category_lists.bgu_list)].index, 'Subsystem'] = 'ПУНФА‚ ПУиО'
     df.loc[df[df['categories'].isin(category_lists.com_list)].index, 'Subsystem'] = 'Командирование'
     df.loc[df[df['categories'].isin(category_lists.admin_list)].index, 'Subsystem'] = 'Администрирование'
     df.loc[df[df['Subsystem'] == ''].index, 'Subsystem'] = 'Прочие'
 
-    if person:
+    return df
+
+
+def build_category_table(month, year, person):
+    df = load_data(table=table_name,
+                   connection_string=conn_string,
+                   month=month,
+                   year=year)
+
+    df = parse_analytics(df=df)
+
+    if len(df[df['specialist'] == person]) > 0:
         cat_df = df[df['specialist'] == person].pivot_table(
             index=['specialist', 'Subsystem', 'categories'],
             values='difficult',

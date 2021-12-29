@@ -133,6 +133,29 @@ def serve_layout():
                             ]
                             ),
                             html.Div([
+                                # html.Div([
+                                #     html.Div([
+                                #         dash_table.DataTable(
+                                #             id='kpi_small',
+                                #             merge_duplicate_headers=True,
+                                #             style_cell={
+                                #                 'whiteSpace': 'normal',
+                                #                 'height': 'auto',
+                                #                 'textAlign': 'center',
+                                #                 'backgroundColor': '#f0f8ff'
+                                #             },
+                                #             style_cell_conditional=[kpi_style],
+                                #             style_header={'textAlign': 'center'},
+                                #             export_format='xlsx'
+                                #         )
+                                #
+                                #     ],
+                                #         className='dash_tables'
+                                #     )
+                                # ],
+                                #     className='line_block_kpi_table',
+                                #     # style=dict(height='290px', margin='95px 21px')
+                                # ),
                                 html.Div([
                                     dcc.Graph(
                                         id='total_task_pie'
@@ -140,6 +163,11 @@ def serve_layout():
                                 ],
                                     className='line_block',
                                 ),
+
+                            ],
+                                style=dict(backgroundColor='#ebecf1')
+                            ),
+                            html.Div([
                                 html.Div([
                                     dcc.Graph(
                                         id='meat_count_tasks_per_day_graph'
@@ -153,7 +181,7 @@ def serve_layout():
                                     )
                                 ],
                                     className='line_block',
-                                ),
+                                )
                             ],
                                 style=dict(backgroundColor='#ebecf1')
                             ),
@@ -484,6 +512,10 @@ def serve_layout():
                                                         'textAlign': 'center',
                                                         'backgroundColor': '#f0f8ff'
                                                     },
+                                                    tooltip_header={
+                                                        'Количество поступивших обращений': {'value': tooltips['3_column'],
+                                                            'type': 'markdown'}
+                                                    },
                                                     export_format='xlsx'
                                                 )
                                             ],
@@ -537,7 +569,40 @@ def serve_layout():
                             ])
                         ],
                         selected_style=tab_selected_style
-                    )
+                    ),
+                    # dcc.Tab(
+                    #     label='KPI',
+                    #     value='kpi',
+                    #     children=[
+                    #         html.Div([
+                    #             html.Div([
+                    #                 dcc.Loading(
+                    #                     id='load_kpi_table',
+                    #                     children=[
+                    #                         html.Div([
+                    #                             dash_table.DataTable(
+                    #                                 id='kpi_table',
+                    #                                 merge_duplicate_headers=True,
+                    #                                 style_cell={
+                    #                                     'whiteSpace': 'normal',
+                    #                                     'height': 'auto',
+                    #                                     'textAlign': 'center',
+                    #                                     'backgroundColor': '#f0f8ff'
+                    #                                 },
+                    #                                 style_cell_conditional=[kpi_style_big],
+                    #                                 style_header={'textAlign': 'center'},
+                    #                                 export_format='xlsx'
+                    #                             )
+                    #                         ],
+                    #                             className='dash_tables'
+                    #                         )
+                    #                     ]
+                    #                 ),
+                    #             ])
+                    #         ])
+                    #     ],
+                    #     selected_style=tab_selected_style
+                    # )
                 ],
                 colors=dict(border='#ebecf1',
                             primary='#222780',
