@@ -61,6 +61,7 @@ def data_table(data_df, filename):
 
 def make_table(content_df, staff_df):
     staff_df.loc[len(staff_df)] = 'Не определено', 'Не определено', 'y', 'y', '', '', '', ''
+
     merged_df = content_df.merge(staff_df[['fio', 'region', 'works_w_tasks']],
                                  how='left',
                                  left_on='specialist',
@@ -86,7 +87,7 @@ def make_table(content_df, staff_df):
         observed=True
     )
 
-    picture_day_df = picture_day_df.merge(staff_df.pivot_table(
+    picture_day_df = picture_day_df.merge(staff_df[(staff_df['works_w_tasks'] == 'y') & (staff_df['state'] == 'y')].pivot_table(
         index='region',
         values=['bgu', 'zkgu', 'admin', 'command'],
         aggfunc='count'
@@ -94,10 +95,10 @@ def make_table(content_df, staff_df):
         on='region')
 
     if len(picture_day_df.columns) > 6:
-        picture_day_df = picture_day_df[['region', 'Администрирование', 'admin', 'Командирование', 'command',
-                                         'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ', 'zkgu', 'Прочие']]
+        picture_day_df = picture_day_df[['region', 'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ', 'zkgu', 'Администрирование', 'admin',
+                                         'Командирование', 'command', 'Прочие']]
     else:
-        picture_day_df = picture_day_df[['region', 'Прочие', 'admin', 'command', 'bgu', 'zkgu']]
+        picture_day_df = picture_day_df[['region', 'bgu', 'zkgu', 'admin', 'command', 'Прочие']]
 
     picture_day_df.columns = [column for column in range(len(picture_day_df.columns))]
 
@@ -153,16 +154,16 @@ def make_table(content_df, staff_df):
 
 def set_picture_day_columns():
     columns = [
-        dict(name=['Регион', ''], id=0),
-        dict(name=['Администрирование', 'Обращения'], id=1),
-        dict(name=['Администрирование', 'Сотрудники'], id=2),
-        dict(name=['Командирование', 'Обращения'], id=3),
-        dict(name=['Командирование', 'Сотрудники'], id=4),
-        dict(name=['ПУНФА‚ ПУиО', 'Обращения'], id=5),
-        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=6),
-        dict(name=['ПУОТ', 'Обращения'], id=7),
-        dict(name=['ПУОТ', 'Сотрудники'], id=8),
-        dict(name=['Прочие', ''], id=9)
+        dict(name=['', 'Регион'], id=0),
+        dict(name=['ПУНФА‚ ПУиО', 'Обращения'], id=1),
+        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=2),
+        dict(name=['ПУОТ', 'Обращения'], id=3),
+        dict(name=['ПУОТ', 'Сотрудники'], id=4),
+        dict(name=['Администрирование', 'Обращения'], id=5),
+        dict(name=['Администрирование', 'Сотрудники'], id=6),
+        dict(name=['Командирование', 'Обращения'], id=7),
+        dict(name=['Командирование', 'Сотрудники'], id=8),
+        dict(name=['', 'Прочие'], id=9)
     ]
     return columns
 
@@ -170,11 +171,11 @@ def set_picture_day_columns():
 def set_picture_day_columns_old():
     columns = [
         dict(name=['Регион', ''], id=0),
-        dict(name=['Прочие', ''], id=1),
-        dict(name=['Администрирование', 'Сотрудники'], id=2),
-        dict(name=['Командирование', 'Сотрудники'], id=3),
-        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=4),
-        dict(name=['ПУОТ', 'Сотрудники'], id=5)
+        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=1),
+        dict(name=['ПУОТ', 'Сотрудники'], id=2),
+        dict(name=['Администрирование', 'Сотрудники'], id=3),
+        dict(name=['Командирование', 'Сотрудники'], id=4),
+        dict(name=['Прочие', ''], id=5)
     ]
     return columns
 
