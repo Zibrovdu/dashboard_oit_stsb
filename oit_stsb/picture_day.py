@@ -90,11 +90,25 @@ def make_table(content_df, staff_df):
     picture_day_df = picture_day_df.merge(staff_df[(staff_df['works_w_tasks'] == 'y') & (staff_df['state'] == 'y')].pivot_table(
         index='region',
         values=['bgu', 'zkgu', 'admin', 'command'],
-        aggfunc='count'
+        aggfunc='count',
+        fill_value=0,
+        observed=True
     ).reset_index(),
         on='region')
+    if 'Командирование' not in picture_day_df.columns:
+        picture_day_df['Командирование'] = 0
+
+    if 'Администрирование' not in picture_day_df.columns:
+        picture_day_df['Администрирование'] = 0
+
+    if 'ПУНФА‚ ПУиО' not in picture_day_df.columns:
+        picture_day_df['ПУНФА‚ ПУиО'] = 0
+
+    if 'ПУОТ' not in picture_day_df.columns:
+        picture_day_df['ПУОТ'] = 0
 
     if len(picture_day_df.columns) > 6:
+
         picture_day_df = picture_day_df[['region', 'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ', 'zkgu', 'Администрирование', 'admin',
                                          'Командирование', 'command', 'Прочие']]
     else:
@@ -154,7 +168,7 @@ def make_table(content_df, staff_df):
 
 def set_picture_day_columns():
     columns = [
-        dict(name=['', 'Регион'], id=0),
+        dict(name=['Подсистема →', 'Регион ↓'], id=0),
         dict(name=['ПУНФА‚ ПУиО', 'Обращения'], id=1),
         dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=2),
         dict(name=['ПУОТ', 'Обращения'], id=3),
@@ -163,7 +177,7 @@ def set_picture_day_columns():
         dict(name=['Администрирование', 'Сотрудники'], id=6),
         dict(name=['Командирование', 'Обращения'], id=7),
         dict(name=['Командирование', 'Сотрудники'], id=8),
-        dict(name=['', 'Прочие'], id=9)
+        dict(name=['Прочие', ''], id=9)
     ]
     return columns
 

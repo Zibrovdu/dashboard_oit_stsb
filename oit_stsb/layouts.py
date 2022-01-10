@@ -513,9 +513,11 @@ def serve_layout():
                                                         'backgroundColor': '#f0f8ff'
                                                     },
                                                     tooltip_header={
-                                                        'Количество поступивших обращений': {'value': tooltips['3_column'],
+                                                        'Количество поступивших обращений': {
+                                                            'value': tooltips['3_column'],
                                                             'type': 'markdown'}
                                                     },
+                                                    merge_duplicate_headers=True,
                                                     export_format='xlsx'
                                                 )
                                             ],
