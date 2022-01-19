@@ -1,7 +1,13 @@
 import pandas as pd
+import datetime
+from functools import reduce
 
 from oit_stsb.calendar_data import count_month_work_days
 from oit_stsb.load_cfg import conn_string
+
+
+def bound_replace(string, old):
+    return string.replace(old, '')
 
 
 def load_data(table, connection_string, **kwargs):
@@ -59,6 +65,9 @@ def load_data(table, connection_string, **kwargs):
 def load_staff(connection_string, **kwargs):
     if 'works' in kwargs:
         return pd.read_sql("""SELECT * FROM oitscb_staff where works_w_tasks = 'y' and state = 'y'""",
+                           con=connection_string)
+    elif 'old_staff' in kwargs:
+        return pd.read_sql('''SELECT * FROM old_staff''',
                            con=connection_string)
     else:
         return pd.read_sql('''SELECT * FROM oitscb_staff''',
@@ -241,3 +250,26 @@ def save_date(df, connection_string):
 def load_date(connection_string):
     date_picture_day = pd.read_sql('date_picture_day', con=connection_string)
     return date_picture_day.loc[0][0]
+
+
+def load_data_from_file(df):
+    df['solve_date'] = pd.to_datetime(df['solve_date'])
+    df['solve_date_2'] = pd.to_datetime(df['solve_date_2'])
+    df['closed_month'] = df['solve_date_2'].apply(lambda x: x.month)
+    df['closed_year'] = df['solve_date_2'].apply(lambda x: x.year)
+    df = df[(df.solve_date >= datetime.datetime(2020, 10, 1)) | (df.solve_date.isna())]
+    df = df[df.assign_group == 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)']
+
+    old_staff_df = load_staff(connection_string=conn_string, old_staff='old_staff')
+    for item in df[df['specialist'].str.contains('@')].specialist.unique():
+        if item in old_staff_df[old_staff_df.mail.str.contains('@')].mail.unique():
+            mask = df[df.specialist == item].index
+            df.loc[mask, 'specialist'] = old_staff_df[old_staff_df.mail == item].fio.iloc[0]
+    df['specialist'] = df['specialist'].fillna('Не определено')
+
+    df.analytics = df.analytics.fillna('-')
+    df.analytics = df.analytics.apply(
+        lambda x: reduce(bound_replace, ['>', '<', 'Сложность: ', 'Категория обращения: '], x))
+    df.analytics = df.analytics.apply(lambda x: x.replace(';', ', '))
+
+    return df

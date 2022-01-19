@@ -9,12 +9,26 @@ import oit_stsb.figures
 import oit_stsb.staff
 import oit_stsb.picture_day
 import oit_stsb.staff_plus
+import oit_stsb.tabs
 import oit_stsb.log_writer as lw
 # import oit_stsb.kpi as kpi
 from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
 
 
 def register_callbacks(app):
+    @app.callback(
+        Output('main_tabs', 'children'),
+        Input('month_dd', 'value')
+    )
+    def check_access_rights(value):
+        username = request.authorization['username']
+        if username == 'admin':
+            lw.log_writer(f'Осуществлен вход под учетной записью {username}')
+            return oit_stsb.tabs.admin_tabs_list
+        else:
+            lw.log_writer(f'Осуществлен вход под учетной записью {username}')
+            return oit_stsb.tabs.not_admin_tabs_list
+
     @app.callback(
         Output('main_table', 'data'),
         Output('main_table', 'columns'),
@@ -32,8 +46,6 @@ def register_callbacks(app):
         Input('choose_colorscheme', 'value')
     )
     def update_table(value, colors):
-        username = request.authorization['username']
-        lw.log_writer(f'Пользователь {username} открыл вкладку "Главная"')
 
         month, year = value.split('_')
 
@@ -108,11 +120,10 @@ def register_callbacks(app):
         staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
                                                                                                 column=2))
 
-        return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l, inc_wo_sla_violation_graph,
-                inc_back_work_graph, mean_time_solve_wo_waiting_graph, mean_count_tasks_per_empl_per_day_graph,
-                staff_data_df.to_dict('records'), staff_data_columns, staff_data_df.to_dict('records'),
-                mean_count_tasks_graph
-                )
+        return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l,
+                inc_wo_sla_violation_graph, inc_back_work_graph, mean_time_solve_wo_waiting_graph,
+                mean_count_tasks_per_empl_per_day_graph, staff_data_df.to_dict('records'), staff_data_columns,
+                staff_data_df.to_dict('records'), mean_count_tasks_graph)
 
     @app.callback(
         Output('sub_filter', 'options'),
@@ -190,6 +201,27 @@ def register_callbacks(app):
         return (options, person_df.to_dict('records'), columns, categories_df.to_dict('records'), categories_df_columns,
                 subs_df.to_dict('records'), subs_df_columns
                 )
+
+    @app.callback(
+        Output('load_data', 'children'),
+        Output('store_main_data', 'data'),
+        Input('upload_total_file', 'contents'),
+        Input('upload_total_file', 'filename')
+    )
+    def get_main_data(contents, filename):
+        if contents is not None:
+            incoming_df = oit_stsb.picture_day.parse_load_file(contents=contents,
+                                                               filename=filename)
+            msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
+
+            if len(incoming_df) > 0:
+                data_df = oit_stsb.load_data_from_file(df=incoming_df)
+            else:
+                data_df = oit_stsb.picture_day.no_data()
+        else:
+            data_df = oit_stsb.picture_day.no_data()
+            msg = 'Нажмите кнопку "Загрузить файл с данными" и выберите файл для загрузки'
+        return msg, data_df.to_dict('records')
 
     @app.callback(
         Output('error_msg', 'children'),

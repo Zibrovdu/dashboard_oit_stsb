@@ -87,11 +87,12 @@ def make_table(content_df, staff_df):
         observed=True
     )
 
-    picture_day_df = picture_day_df.merge(staff_df[(staff_df['works_w_tasks'] == 'y') & (staff_df['state'] == 'y')].pivot_table(
-        index='region',
-        values=['bgu', 'zkgu', 'admin', 'command'],
-        aggfunc='count'
-    ).reset_index(),
+    picture_day_df = picture_day_df.merge(
+        staff_df[(staff_df['works_w_tasks'] == 'y') & (staff_df['state'] == 'y')].pivot_table(
+            index='region',
+            values=['bgu', 'zkgu', 'admin', 'command'],
+            aggfunc='count'
+        ).reset_index(),
         on='region')
 
     if len(picture_day_df.columns) > 6:
@@ -100,54 +101,13 @@ def make_table(content_df, staff_df):
     else:
         picture_day_df = picture_day_df[['region', 'bgu', 'zkgu', 'admin', 'command', 'Прочие']]
 
-    picture_day_df.columns = [column for column in range(len(picture_day_df.columns))]
+    picture_day_df = picture_day_df.merge(merged_df.groupby('region')['task_number'].count(), how='outer', on='region')
 
-    # picture_day_df = merged_df.pivot_table(index='region', values='task_number', aggfunc='count').reset_index()
-    #
-    # if len(merged_df[merged_df.solve_date.notna()]) == 0:
-    #     picture_day_df['solved_tasks'] = 0
-    # else:
-    #     picture_day_df = picture_day_df.merge(merged_df[merged_df.solve_date.notna()].pivot_table(index='region',
-    #                                                                                               values='task_number',
-    #                                                                                               aggfunc='count').
-    #                                           rename(columns={'task_number': 'solved_tasks'}).reset_index(),
-    #                                           on='region',
-    #                                           how='left')
-    # if len(merged_df[merged_df.solve_date.isna()]) == 0:
-    #     picture_day_df['in_work_task'] = 0
-    # else:
-    #     picture_day_df = picture_day_df.merge(merged_df[merged_df.solve_date.isna()].pivot_table(index='region',
-    #                                                                                              values='task_number',
-    #                                                                                              aggfunc='count').
-    #                                           rename(columns={'task_number': 'in_work_task'}).reset_index(),
-    #                                           on='region',
-    #                                           how='left')
-    # picture_day_df = picture_day_df.merge(merged_df.pivot_table(index='region',
-    #                                                             values='specialist',
-    #                                                             aggfunc=pd.Series.nunique).reset_index(),
-    #                                       on='region',
-    #                                       how='left')
-    # if len(merged_df[merged_df.count_of_returns > 0]) == 0:
-    #     picture_day_df['count_of_returns'] = 0
-    # else:
-    #     picture_day_df = picture_day_df.merge(
-    #         merged_df[merged_df.count_of_returns > 0].pivot_table(index='region',
-    #                                                               values='count_of_returns',
-    #                                                               aggfunc=np.sum).reset_index(),
-    #         on='region',
-    #         how='left')
-    #
-    # picture_day_df['average'] = round(picture_day_df['task_number'] / picture_day_df['specialist'], 2)
-    #
-    # picture_day_df.fillna(0, inplace=True)
-    #
-    # for column in [x for x in picture_day_df.columns if x != 'region' and x != 'average']:
-    #     picture_day_df[column] = picture_day_df[column].astype(int)
-    #
-    # picture_day_df.columns = [
-    #     'Регион', 'Количество поступивших обращений', 'Из них, решенных на 2Л', 'Из них, в работе',
-    #     'Количество сотрудников', 'Количество возвратов', 'Среднее кол-во обращений на 1 сотрудника'
-    # ]
+    picture_day_df = picture_day_df.merge(merged_df.groupby('region')['specialist'].nunique(), how='outer', on='region')
+
+    picture_day_df['delta'] = round(picture_day_df['task_number'] / picture_day_df['specialist'], 1)
+
+    picture_day_df.columns = [column for column in range(len(picture_day_df.columns))]
 
     return picture_day_df
 
@@ -163,7 +123,11 @@ def set_picture_day_columns():
         dict(name=['Администрирование', 'Сотрудники'], id=6),
         dict(name=['Командирование', 'Обращения'], id=7),
         dict(name=['Командирование', 'Сотрудники'], id=8),
-        dict(name=['', 'Прочие'], id=9)
+        dict(name=['', 'Прочие'], id=9),
+        dict(name=['Количество', 'обращений'], id=10),
+        dict(name=['Количество', 'сотрудников'], id=11),
+        dict(name=['Среднее кол-во', 'обращений на сотрудника'], id=12)
+
     ]
     return columns
 
@@ -175,7 +139,10 @@ def set_picture_day_columns_old():
         dict(name=['ПУОТ', 'Сотрудники'], id=2),
         dict(name=['Администрирование', 'Сотрудники'], id=3),
         dict(name=['Командирование', 'Сотрудники'], id=4),
-        dict(name=['Прочие', ''], id=5)
+        dict(name=['Прочие', ''], id=5),
+        dict(name=['Количество', 'обращений'], id=6),
+        dict(name=['Количество', 'сотрудников'], id=7),
+        dict(name=['Среднее кол-во', 'обращений на сотрудника'], id=8)
     ]
     return columns
 

@@ -155,6 +155,12 @@ media screen and (max-width: 650px) {
     padding: 0 30px;
 }
 
+.btn_save_data_to_db {
+    width: 13%;
+    margin: 30px;
+    padding: 0 30px;
+}
+
 .labels_encrypt {
     padding: 10px;
 }
