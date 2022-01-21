@@ -119,7 +119,6 @@ def make_table(content_df, staff_df):
 
     picture_day_df['delta'] = round(picture_day_df['task_number'] / picture_day_df['specialist'], 1)
 
-    print(picture_day_df.columns)
     picture_day_df = picture_day_df[['region', 'task_number', 'specialist', 'delta', 'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ',
                                      'zkgu', 'Администрирование', 'admin', 'Командирование', 'command', 'Прочие', ]]
 
