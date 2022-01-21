@@ -119,6 +119,10 @@ def make_table(content_df, staff_df):
 
     picture_day_df['delta'] = round(picture_day_df['task_number'] / picture_day_df['specialist'], 1)
 
+    print(picture_day_df.columns)
+    picture_day_df = picture_day_df[['region', 'task_number', 'specialist', 'delta', 'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ',
+                                     'zkgu', 'Администрирование', 'admin', 'Командирование', 'command', 'Прочие', ]]
+
     picture_day_df.columns = [column for column in range(len(picture_day_df.columns))]
 
     return picture_day_df
@@ -127,18 +131,18 @@ def make_table(content_df, staff_df):
 def set_picture_day_columns():
     columns = [
         dict(name=['', 'Регион'], id=0),
-        dict(name=['ПУНФА‚ ПУиО', 'Обращения'], id=1),
-        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=2),
-        dict(name=['ПУОТ', 'Обращения'], id=3),
-        dict(name=['ПУОТ', 'Сотрудники'], id=4),
-        dict(name=['Администрирование', 'Обращения'], id=5),
-        dict(name=['Администрирование', 'Сотрудники'], id=6),
-        dict(name=['Командирование', 'Обращения'], id=7),
-        dict(name=['Командирование', 'Сотрудники'], id=8),
-        dict(name=['', 'Прочие'], id=9),
-        dict(name=['Количество', 'обращений'], id=10),
-        dict(name=['Количество', 'сотрудников'], id=11),
-        dict(name=['Среднее кол-во', 'обращений на сотрудника'], id=12)
+        dict(name=['Количество', 'обращений'], id=1),
+        dict(name=['Количество', 'сотрудников'], id=2),
+        dict(name=['Среднее кол-во', 'обращений на сотрудника'], id=3),
+        dict(name=['ПУНФА‚ ПУиО', 'Обращения'], id=4),
+        dict(name=['ПУНФА‚ ПУиО', 'Сотрудники'], id=5),
+        dict(name=['ПУОТ', 'Обращения'], id=6),
+        dict(name=['ПУОТ', 'Сотрудники'], id=7),
+        dict(name=['Администрирование', 'Обращения'], id=8),
+        dict(name=['Администрирование', 'Сотрудники'], id=9),
+        dict(name=['Командирование', 'Обращения'], id=10),
+        dict(name=['Командирование', 'Сотрудники'], id=11),
+        dict(name=['', 'Прочие'], id=12),
 
     ]
     return columns
