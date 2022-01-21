@@ -498,12 +498,13 @@ load_data_tab = dcc.Tab(
                                                 'Загрузить файл с данными'
                                             ),
                                             id='upload_total_file',
-                                            className='btn_load', style=dict(margin='70px 0px')
+                                            className='btn_load',
+                                            style=dict(margin='70px 0px')
                                         ),
                                     ]),
                                     html.Div([
                                         dcc.Loading(
-                                            html.Label(id='load_data')
+                                            html.Label(id='load_data', className='label_load_data')
                                         )
                                     ]),
                                     html.Div([
@@ -514,8 +515,17 @@ load_data_tab = dcc.Tab(
                                     html.Div([
                                         html.Button('Загрузить данные в базу',
                                                     id='btn_load_main_data',
-                                                    className='btn_save_data_to_db')
-                                    ])
+                                                    # style=dict(opacity='1'),
+                                                    # disabled=True,
+                                                    className='btn_save_data_to_db'),
+                                        html.Label(id='lbl_load_data', className='label_load_data')
+                                    ],
+                                        id='div_load_btn',
+                                        hidden=True)
+                                ]),
+                                html.Div([
+                                    dcc.Location(id='upd_load_main_data',
+                                                 refresh=True),
                                 ])
 
                             ])

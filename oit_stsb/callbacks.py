@@ -205,6 +205,7 @@ def register_callbacks(app):
     @app.callback(
         Output('load_data', 'children'),
         Output('store_main_data', 'data'),
+        Output('div_load_btn', 'hidden'),
         Input('upload_total_file', 'contents'),
         Input('upload_total_file', 'filename')
     )
@@ -215,13 +216,36 @@ def register_callbacks(app):
             msg = oit_stsb.picture_day.data_table(data_df=incoming_df, filename=filename)[1]
 
             if len(incoming_df) > 0:
-                data_df = oit_stsb.load_data_from_file(df=incoming_df)
+                # data_df = oit_stsb.load_data_from_file(df=incoming_df)
+                # print(data_df.dtypes)
+                hide_button = False
             else:
-                data_df = oit_stsb.picture_day.no_data()
+                # data_df = oit_stsb.picture_day.no_data()
+                hide_button = True
         else:
-            data_df = oit_stsb.picture_day.no_data()
+            incoming_df = oit_stsb.picture_day.no_data()
             msg = 'Нажмите кнопку "Загрузить файл с данными" и выберите файл для загрузки'
-        return msg, data_df.to_dict('records')
+            hide_button = True
+
+        return msg, incoming_df.to_dict('records'), hide_button
+
+    @app.callback(
+        Output('lbl_load_data', 'children'),
+        Output("upd_load_main_data", "href"),
+        Input('store_main_data', 'data'),
+        Input('btn_load_main_data', 'n_clicks'),
+        prevent_initial_call=True,
+    )
+    def write_data_to_db(data, click):
+        if click and data:
+            df = pd.DataFrame(data)
+            data_df = oit_stsb.load_data_from_file(df=df)
+            data_df.to_sql(table_name,
+                           con=conn_string,
+                           index=False,
+                           if_exists='replace')
+            return 'loading successful!!!', "/"
+        return dash.no_update, dash.no_update
 
     @app.callback(
         Output('error_msg', 'children'),

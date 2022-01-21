@@ -253,8 +253,8 @@ def load_date(connection_string):
 
 
 def load_data_from_file(df):
-    df['solve_date'] = pd.to_datetime(df['solve_date'])
-    df['solve_date_2'] = pd.to_datetime(df['solve_date_2'])
+    for col in ['reg_date', 'solve_date', 'solve_date_2']:
+        df[col] = pd.to_datetime(df[col])
     df['closed_month'] = df['solve_date_2'].apply(lambda x: x.month)
     df['closed_year'] = df['solve_date_2'].apply(lambda x: x.year)
     df = df[(df.solve_date >= datetime.datetime(2020, 10, 1)) | (df.solve_date.isna())]

@@ -95,6 +95,18 @@ def make_table(content_df, staff_df):
         ).reset_index(),
         on='region')
 
+    if 'Командирование' not in picture_day_df.columns:
+        picture_day_df['Командирование'] = 0
+
+    if 'Администрирование' not in picture_day_df.columns:
+        picture_day_df['Администрирование'] = 0
+
+    if 'ПУНФА‚ ПУиО' not in picture_day_df.columns:
+        picture_day_df['ПУНФА‚ ПУиО'] = 0
+
+    if 'ПУОТ' not in picture_day_df.columns:
+        picture_day_df['ПУОТ'] = 0
+
     if len(picture_day_df.columns) > 6:
         picture_day_df = picture_day_df[['region', 'ПУНФА‚ ПУиО', 'bgu', 'ПУОТ', 'zkgu', 'Администрирование', 'admin',
                                          'Командирование', 'command', 'Прочие']]
