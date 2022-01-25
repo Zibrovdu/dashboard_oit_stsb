@@ -1,6 +1,6 @@
 from dash import dcc, html, dash_table
 
-from oit_stsb.params import region_style, staff_style, tooltips, kpi_style_big
+from oit_stsb.params import region_style, staff_style, tooltips, kpi_style_big, picture_day_table_style
 from oit_stsb.load_cfg import colors
 
 tab_selected_style = dict(backgroundColor='#ebecf1',
@@ -418,6 +418,8 @@ picture_day_tab = dcc.Tab(
                                     'textAlign': 'center',
                                     'backgroundColor': '#f0f8ff'
                                 },
+                                style_data_conditional=picture_day_table_style,
+                                style_header_conditional=picture_day_table_style,
                                 tooltip_header={
                                     'Количество поступивших обращений': {'value': tooltips['3_column'],
                                                                          'type': 'markdown'}

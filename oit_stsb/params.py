@@ -37,6 +37,8 @@ region_style = [
     {'if': {'filter_query': f'{{12}} < 4', 'column_id': 12}, 'backgroundColor': 'tomato', 'color': 'white'}
 ]
 
+picture_day_table_style = [{'if': {'column_id': i}, 'backgroundColor': '#D6ECFF'} for i in range(4, 13)]
+
 kpi_style = {
     'if': {
         'column_id': 0
@@ -72,7 +74,7 @@ __Алгоритм расчета среднего значения:__
 Количество открытых обращений закрытых сотрудником за выбранный период
     """,
     'pd_2_column':
-    """
+        """
     
     """
 }
