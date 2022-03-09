@@ -54,7 +54,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   max-height: 80vh;
-  background-color: #ffffff;
+  background-color: #ebecf1;
   border-radius: 8px;
   transition: .2s;
   transform: translateY(-50px);
@@ -101,6 +101,8 @@ body {
 .modal--s .modal__dialog  {width: 300px;}
 .modal--m .modal__dialog {width: 600px;}
 .modal--l .modal__dialog {width: 900px;}
+.modal--xl .modal__dialog {width: 1700px; height: 1200px;}
+.modal--z .modal__dialog {width: 600px; height: 850px;}
 
 .modal--screen-height .modal__dialog {max-height: 80vh;}
 

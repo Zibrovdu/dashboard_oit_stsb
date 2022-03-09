@@ -219,8 +219,98 @@ media screen and (max-width: 650px) {
       margin: 0 0 10px -75px;
 
 }
-.export:hover {
-    background-color: #b1d5fa;
+.export:hover:after {
+    color: #1959d1;
+    background-color: rgb(177, 213, 250);
+}
+
+.export:active:after {
+    color: rgb(235, 236, 241);
+    background-color: #1959d1;
+}
+
+.div_fiter_panel {
+    width: 300px;
+    display: inline-block;
+}
+
+.div_filer_panel_labels {
+    margin: 10px 25px;
+}
+
+.filter_panel_labels {
+    font-size: 25px;
+}
+
+.div_main_filter_panel {
+    display: inline-block;
+    width: 75%;
+}
+
+.div_buttons_staff {
+    display: inline-block;
+    width: auto;
+}
+
+.button_load_staff {
+    color: #1959d1;
+    border: 1px solid #1959d1;
+    border-radius: 6px;
+    text-decoration: none;
+    padding: 15px;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.1rem;
+    line-height: 38px;
+}
+
+.button_load_staff:hover {
+    color: #1959d1;
+    background-color: rgb(177, 213, 250);
+}
+
+.button_load_staff:active {
+    color: rgb(235, 236, 241);
+    background-color: #1959d1;
+}
+
+.spec_style_btn_save {
+    padding: 0px 15px;
+    width: 3cm;
+    color: forestgreen;
+}
+
+.spec_style_btn_save:hover {
+    color: forestgreen;
+    background-color: #D5FAB1;
+}
+
+.spec_style_btn_save:active {
+    color: rgb(235, 236, 241);
+    background-color: forestgreen;
+}
+
+.spec_style_btn_cancel {
+    padding: 0px 15px;
+    width: 3cm;
+    color: crimson;
+    margin: 0px 10px;
+}
+
+.spec_style_btn_cancel:hover {
+    color: crimson;
+    background-color: #FAB1D5;
+}
+
+.spec_style_btn_cancel:active {
+    color: rgb(235, 236, 241);
+    background-color: crimson;
+}
+
+.table_staff {
+    width: 60%;
+    margin: 20px 20px;
 }
 
 /* Когда ширина окна от 1100 пикселей, ширина  div-2 будет 900px */

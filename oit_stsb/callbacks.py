@@ -12,7 +12,7 @@ import oit_stsb.staff_plus
 import oit_stsb.tabs
 import oit_stsb.log_writer as lw
 # import oit_stsb.kpi as kpi
-from oit_stsb.load_cfg import table_name, tasks_closed_wo_3l, conn_string
+from oit_stsb.load_cfg import table_name, staff_table_name, tasks_closed_wo_3l, conn_string
 
 
 def register_callbacks(app):
@@ -66,7 +66,7 @@ def register_callbacks(app):
         mean_count_tasks_graph = oit_stsb.figures.plot_meat_count_tasks_per_day(df=mean_count_tasks_df,
                                                                                 colors=colors)
 
-        columns = oit_stsb.set_columns()
+        columns = oit_stsb.set_main_table_columns()
 
         total_task_pie_g = oit_stsb.figures.total_tasks_pie(df=data_df.loc[:len(data_df) - 2],
                                                             colors=colors)
@@ -311,6 +311,160 @@ def register_callbacks(app):
 
         div_style = dict(opacity='0')
         return dash.no_update, dash.no_update, dash.no_update, div_style, dash.no_update
+
+    @app.callback(
+        Output('add_new_staff_region', 'options'),
+        Output('add_new_staff_work', 'options'),
+        Output('add_new_staff_task', 'options'),
+        Output('add_new_staff_subs', 'options'),
+        Output('list_staff_fio_modify', 'options'),
+        Input('month_dd', 'value')
+    )
+    def fill_dropdowns(value):
+        filter_query_region = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                                 update='update'),
+                                                          filter_name='region')
+        filter_query_work = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                               update='update'),
+                                                        filter_name='state')
+
+        filter_query_task = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                               update='update'),
+                                                        filter_name='works_w_tasks')
+        subs_options = [{'label': i, "value": i} for i in ['ПУНФА/ПУИО', 'ПУОТ', 'Администрирование', 'Командирование']]
+
+        filter_query_fio = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                              update='update'),
+                                                       filter_name='fio')
+
+        return filter_query_region[1:], filter_query_work[1:], filter_query_task[1:], subs_options, filter_query_fio[1:]
+
+    @app.callback(
+        Output('table_staff', 'data'),
+        Output('table_staff', 'columns'),
+        Input('filter_query_staff', 'value'),
+        Input('filter_query_works', 'value'),
+        Input('filter_query_tasks', 'value')
+    )
+    def filter_staff_table(region, state, work_tasks):
+        staff_df = oit_stsb.load_staff(connection_string=conn_string, update='update')
+        staff_columns = oit_stsb.set_staff_columns()
+
+        if region == 'Все' and state == 'Все' and work_tasks == 'Все':
+            return staff_df.to_dict('records'), staff_columns
+
+        if region != 'Все' and state != 'Все' and work_tasks != 'Все':
+            staff_df = staff_df[(staff_df['region'] == region) & (staff_df['state'] == state) & (
+                    staff_df['works_w_tasks'] == work_tasks)]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region == 'Все' and state != 'Все' and work_tasks != 'Все':
+            staff_df = staff_df[(staff_df['state'] == state) & (staff_df['works_w_tasks'] == work_tasks)]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region != 'Все' and state == 'Все' and work_tasks != 'Все':
+            staff_df = staff_df[(staff_df['region'] == region) & (staff_df['works_w_tasks'] == work_tasks)]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region != 'Все' and state != 'Все' and work_tasks == 'Все':
+            staff_df = staff_df[(staff_df['region'] == region) & (staff_df['state'] == state)]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region == 'Все' and state == 'Все' and work_tasks != 'Все':
+            staff_df = staff_df[staff_df['works_w_tasks'] == work_tasks]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region == 'Все' and state != 'Все' and work_tasks == 'Все':
+            staff_df = staff_df[(staff_df['state'] == state)]
+            return staff_df.to_dict('records'), staff_columns
+
+        if region != 'Все' and state == 'Все' and work_tasks == 'Все':
+            staff_df = staff_df[(staff_df['region'] == region)]
+            return staff_df.to_dict('records'), staff_columns
+
+        return dash.no_update, dash.no_update
+
+    @app.callback(
+        Output('load_state', 'children'),
+        Output('load_state', 'style'),
+        Output('refresh_staff_table', 'href'),
+        Input('load_staff_to_db', 'n_clicks'),
+        Input('new_staff_fio', 'value'),
+        Input('add_new_staff_region', 'value'),
+        Input('add_new_staff_work', 'value'),
+        Input('add_new_staff_task', 'value'),
+        Input('add_new_staff_subs', 'value'),
+        prevent_initial_call=True,
+    )
+    def add_new_person(click, fio, region, work, task, subs):
+        if click:
+            row = oit_stsb.make_row(fio=fio, region=region, work=work, task=task, subs=subs)
+
+            df = pd.DataFrame(columns=['fio', 'region', 'state', 'works_w_tasks', 'bgu', 'zkgu', 'admin', 'command'])
+            df.loc[0] = row
+            df.to_sql(staff_table_name,
+                      con=conn_string,
+                      index=False,
+                      if_exists='append')
+            return 'Success', dict(color='green'), "/"
+        return dash.no_update, dash.no_update, dash.no_update
+
+    @app.callback(
+        Output('modify_staff_fio', 'value'),
+        Output('modify_staff_region', 'value'),
+        Output('modify_staff_work', 'value'),
+        Output('modify_staff_task', 'value'),
+        Output('modify_staff_subs', 'value'),
+        Input('list_staff_fio_modify', 'value')
+    )
+    def fill_form(fio):
+        staff_df = oit_stsb.load_staff(connection_string=conn_string, update='update')
+        if fio:
+            row = staff_df[staff_df['fio'] == fio].iloc[0].tolist()
+
+            subs_type = [index for index, element in enumerate(row[4:]) if element == 'Да']
+            if subs_type == [0]:
+                subs = 'ПУНФА/ПУИО'
+            elif subs_type == [1]:
+                subs = 'ПУОТ'
+            elif subs_type == [2]:
+                subs = 'Администрирование'
+            elif subs_type == [3]:
+                subs = 'Командирование'
+            else:
+                subs = ''
+
+            return row[0], row[1], row[2], row[3], subs
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+
+    @app.callback(
+        Output('modify_state', 'children'),
+        Output('modify_state', 'style'),
+        Output('refresh_modify_staff_table', 'href'),
+        Input('list_staff_fio_modify', 'value'),
+        Input('modify_staff_to_db', 'n_clicks'),
+        Input('modify_staff_fio', 'value'),
+        Input('modify_staff_region', 'value'),
+        Input('modify_staff_work', 'value'),
+        Input('modify_staff_task', 'value'),
+        Input('modify_staff_subs', 'value'),
+        prevent_initial_call=True,
+    )
+    def modify_staff(fio_index, click, fio, region, work, task, subs):
+        if click and fio_index:
+            df = pd.read_sql(f"SELECT * from oitscb_staff", con=conn_string)
+            mask = df[df['fio'] == fio_index].index
+            row = oit_stsb.make_row(fio=fio, region=region, work=work, task=task, subs=subs)
+
+            df.loc[mask, df.columns] = row
+
+            df.to_sql('oitscb_staff',
+                      con=conn_string,
+                      index=False,
+                      if_exists='replace')
+
+            return 'Success', dict(color='green'), '/'
+        return dash.no_update, dash.no_update, dash.no_update
 
     # @app.callback(
     #     Output('kpi_table', 'data'),

@@ -13,6 +13,7 @@ db_port = cfg_parser['connect']['port']
 db_dialect = cfg_parser['connect']['dialect']
 
 table_name = cfg_parser['table_names']['db_table']
+staff_table_name = cfg_parser['table_names']['db_staff_table']
 
 conn_string = create_engine(f'{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}')
 

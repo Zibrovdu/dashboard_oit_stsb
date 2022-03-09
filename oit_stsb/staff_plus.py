@@ -5,10 +5,6 @@ from oit_stsb.load_cfg import conn_string, table_name
 from oit_stsb import load_data, bound_replace
 import oit_stsb.category_lists as category_lists
 
-#
-# def bound_replace(string, old):
-#     return string.replace(old, '')
-
 
 def mean_difficult(df):
     if len(df) == 0:

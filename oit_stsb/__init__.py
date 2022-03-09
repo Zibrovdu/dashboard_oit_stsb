@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import datetime
 from functools import reduce
 
@@ -69,9 +70,34 @@ def load_staff(connection_string, **kwargs):
     elif 'old_staff' in kwargs:
         return pd.read_sql('''SELECT * FROM old_staff''',
                            con=connection_string)
+    elif 'update' in kwargs:
+        df = pd.read_sql('''SELECT * FROM oitscb_staff''',
+                         con=connection_string)
+        df['state'] = df['state'].apply(lambda x: 'Работает' if x == 'y' else 'Уволен')
+        df['works_w_tasks'] = df['works_w_tasks'].apply(lambda x: 'Да' if x == 'y' else 'Нет')
+        df['bgu'] = df['bgu'].apply(lambda x: 'Да' if x == 1 else 'Нет')
+        df['zkgu'] = df['zkgu'].apply(lambda x: 'Да' if x == 1 else 'Нет')
+        df['admin'] = df['admin'].apply(lambda x: 'Да' if x == 1 else 'Нет')
+        df['command'] = df['command'].apply(lambda x: 'Да' if x == 1 else 'Нет')
+
+        df.sort_values(['fio'], ascending=True, inplace=True)
+        return df
     else:
         return pd.read_sql('''SELECT * FROM oitscb_staff''',
                            con=connection_string)
+
+
+def set_staff_columns():
+
+    col_name_dict = dict(fio=['ФИО', ''], region=['Регион', ''], state=['Статус', ''],
+                         works_w_tasks=['Участие в оценке', ''], bgu=['Подсистемы', 'ПУНФА/ПУИО'],
+                         zkgu=['Подсистемы', 'ПУОТ'], admin=['Подсистемы', 'Администрирование'],
+                         command=['Подсистемы', 'Командирование']
+                         )
+
+    columns = [{'name': name, 'id': index} for index, name in col_name_dict.items()]
+
+    return columns
 
 
 def get_period_month(year, month):
@@ -212,7 +238,7 @@ def make_main_table(table_name, month, year, column, month_work_days):
     return result
 
 
-def set_columns():
+def set_main_table_columns():
     columns = [
         dict(name=['Регион', ''], id=0),
         dict(name=['Инциденты, закрытые сотрудником, из всего потока на 2Л', 'шт.', ''], id=1),
@@ -241,7 +267,6 @@ def read_history_data():
 
 
 def save_date(df, connection_string):
-
     date_picture_day = pd.DataFrame([df['reg_date'].max().date().strftime("%d-%m-%Y")], columns=['update_date'])
     date_picture_day.to_sql('date_picture_day', con=connection_string, if_exists='replace', index=False)
     return date_picture_day.loc[0][0]
@@ -273,3 +298,39 @@ def load_data_from_file(df):
     df.analytics = df.analytics.apply(lambda x: x.replace(';', ', '))
 
     return df
+
+
+def get_filter_options(df, filter_name):
+    if filter_name == 'state':
+        filter_query_options = [{'label': i, 'value': i} for i in df['state'].unique()]
+    elif filter_name == 'works_w_tasks':
+        filter_query_options = [{'label': i, 'value': i} for i in df['works_w_tasks'].unique()]
+    elif filter_name == 'fio':
+        filter_query_options = [{'label': i, 'value': i} for i in df['fio'].unique()]
+    else:
+        filter_query_options = [{'label': i, 'value': i} for i in df['region'].unique()]
+    filter_query_options.insert(0, dict(label='Все', value='Все'))
+
+    return filter_query_options
+
+
+def make_row(fio, region, work, task, subs):
+    if work == 'Работает':
+        work = 'y'
+    else:
+        work = 'n'
+    if task == 'Да':
+        task = 'y'
+    else:
+        task = 'n'
+    if subs == 'ПУНФА/ПУИО':
+        row = [fio, region, work, task, 1, np.nan, np.nan, np.nan]
+    elif subs == 'ПУОТ':
+        row = [fio, region, work, task, np.nan, 1, np.nan, np.nan]
+    elif subs == 'Администрирование':
+        row = [fio, region, work, task, np.nan, np.nan, 1, np.nan]
+    elif subs == 'Командирование':
+        row = [fio, region, work, task, np.nan, np.nan, np.nan, 1]
+    else:
+        row = [fio, region, work, task, np.nan, np.nan, np.nan, np.nan]
+    return row
