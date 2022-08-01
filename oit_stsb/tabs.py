@@ -7,7 +7,7 @@ from oit_stsb.load_cfg import colors, conn_string
 tab_selected_style = dict(backgroundColor='#ebecf1',
                           fontWeight='bold')
 
-filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Регион'])]
+filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Должность', 'Регион'])]
 
 staff_oit_stsb_df = oit_stsb.load_staff(
     connection_string=conn_string
@@ -202,7 +202,7 @@ staff_tab = dcc.Tab(
                                 },
                                 style_data_conditional=staff_style,
                                 tooltip_header={
-                                    3: {'value': tooltips['3_column'],
+                                    4: {'value': tooltips['3_column'],
                                         'type': 'markdown'}
                                 },
                                 tooltip_duration=None,
@@ -224,7 +224,7 @@ staff_tab = dcc.Tab(
                                 },
                                 style_data_conditional=staff_style,
                                 tooltip_header={
-                                    3: {'value': tooltips['3_column'],
+                                    4: {'value': tooltips['3_column'],
                                         'type': 'markdown'}
                                 },
                                 tooltip_duration=None,

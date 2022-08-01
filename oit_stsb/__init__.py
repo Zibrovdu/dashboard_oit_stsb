@@ -8,6 +8,16 @@ from oit_stsb.load_cfg import conn_string
 
 
 def bound_replace(string, old):
+    """
+    Описание:
+    ---------
+    Функция необходима для корректной обработки файла с данными в части разделения аналитических призканов
+    (колонка analytics)
+
+    Returns:
+    -------
+        **String**
+    """
     return string.replace(old, '')
 
 
@@ -64,6 +74,23 @@ def load_data(table, connection_string, **kwargs):
 
 
 def load_staff(connection_string, **kwargs):
+    """
+    Синтаксис:
+    ----------
+    **load_staff** (connection_string, **kwargs)
+    Описание:
+    ---------
+    Функция загружает из базы данных информацию о сотрудниках
+    Параметры:
+    ----------
+    **works** - отбирает только работающих сотрудников и учавствующих в рейтинге;
+    **old_staff** - отбирает из базы сотрудников и их адреса электронной почты (требуется для старых данных до
+    октября 2020 г., т.к. ранее в графе сотрудник указывалось не ФИО а электроннй адрес сотрудника)
+    **update** - Выгрузка сотрудников из базы для картины дня и корректной работы вкладки обновление  
+    Returns:
+    -------
+        **string** or **list of strings**
+    """
     if 'works' in kwargs:
         return pd.read_sql("""SELECT * FROM oitscb_staff where works_w_tasks = 'y' and state = 'y'""",
                            con=connection_string)
@@ -83,12 +110,24 @@ def load_staff(connection_string, **kwargs):
         df.sort_values(['fio'], ascending=True, inplace=True)
         return df
     else:
-        return pd.read_sql('''SELECT * FROM oitscb_staff''',
+        return pd.read_sql('''SELECT * FROM oitscb_staff_new''',
                            con=connection_string)
 
 
-def set_staff_columns():
+def set_upd_staff_columns():
+    """
+    Синтаксис:
+    ----------
+    **set_staff_columns** ()
+    Описание:
+    ---------
+    Функция отвечает за отображение названий столбцов в таблице сотрудинки на вкладке Загрузка и обновление данных ->
+    Обновление базы сотрудников
 
+    Returns:
+    -------
+        **Dict**
+    """
     col_name_dict = dict(fio=['ФИО', ''], region=['Регион', ''], state=['Статус', ''],
                          works_w_tasks=['Участие в оценке', ''], bgu=['Подсистемы', 'ПУНФА/ПУИО'],
                          zkgu=['Подсистемы', 'ПУОТ'], admin=['Подсистемы', 'Администрирование'],
@@ -129,6 +168,22 @@ def get_period_month(year, month):
 
 
 def set_periods(df):
+    """
+        Синтаксис:
+        ----------
+
+        **set_periods** (df)
+
+        Описание:
+        ----------
+        Функция принимает на вход датафрейм с данными. Возвращает список уникальных значений "Месяц - Год"
+        отсортированный по убыванию. Данный список загружается в выпадающий список, из которого пользователь производит
+        выбор периода (компонент "month_dd")
+
+        Returns:
+        ----------
+            **List**
+        """
     start_period = [{'label': f"{get_period_month(year=df['solve_date'].min().year, month=i)}",
                      'value': str(i) + '_' + str(df['solve_date'].min().year)}
                     for i in range(df['solve_date'].min().month, 13)]
@@ -170,10 +225,12 @@ def make_main_table(table_name, month, year, column, month_work_days):
                    month=month,
                    year=year,
                    enq_field='solve_date')
+
     merged_df = df.merge(load_staff(connection_string=conn_string, works='works'),
                          left_on='specialist',
                          right_on='fio',
                          how='left')
+
     merged_df.drop('fio', axis=1, inplace=True)
     merged_df.reset_index(inplace=True)
     merged_df['delta'] = merged_df['solve_date'] - merged_df['reg_date']
@@ -181,6 +238,7 @@ def make_main_table(table_name, month, year, column, month_work_days):
     result = merged_df.pivot_table(index=column,
                                    values='task_number',
                                    aggfunc='count').reset_index()
+
     result.columns = [column, 'num']
     result['persent'] = result['num'].apply(lambda num: round(num / result['num'].sum() * 100, 1))
 
@@ -207,9 +265,9 @@ def make_main_table(table_name, month, year, column, month_work_days):
     result = result.merge(pt, on=column, how='outer')
     result['persent4'] = result.apply(lambda row: round(row['num4'] / row['num2'] * 100, 1), axis=1)
 
-    pt = merged_df[merged_df['count_escalation_tasks'] > 0].pivot_table(index=column,
-                                                                        values='work_time_solve',
-                                                                        aggfunc='mean').reset_index()
+    pt = merged_df[merged_df['count_escalation_tasks'] == 0].pivot_table(index=column,
+                                                                         values='work_time_solve',
+                                                                         aggfunc='mean').reset_index()
     pt.columns = [column, 'num5']
     result = result.merge(pt, on=column, how='outer')
 

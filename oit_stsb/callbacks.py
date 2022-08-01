@@ -118,7 +118,7 @@ def register_callbacks(app):
                                                         month_work_days=month_work_days)
 
         staff_data_columns = oit_stsb.staff.set_staff_columns(mv=oit_stsb.staff.count_statistic(income_df=staff_data_df,
-                                                                                                column=2))
+                                                                                                column=3))
 
         return (data_df.to_dict('records'), columns, total_task_pie_g, inc_close_wo_3l,
                 inc_wo_sla_violation_graph, inc_back_work_graph, mean_time_solve_wo_waiting_graph,
@@ -151,7 +151,7 @@ def register_callbacks(app):
     def fill_form(column, text, data_df):
         df = pd.DataFrame(data_df)
         mv = oit_stsb.staff.count_statistic(income_df=df,
-                                            column='2')
+                                            column='3')
         if column and text:
             df = df[df[str(column - 1)].isin(text)]
             div_staff_table_hidden = True
@@ -181,7 +181,7 @@ def register_callbacks(app):
         df = pd.DataFrame(data)
 
         mv = oit_stsb.staff.count_statistic(income_df=df,
-                                            column='2')
+                                            column='3')
         options = [{'label': item, 'value': item} for item in np.sort(df['0'].unique())]
 
         person_df = df[df['0'] == person][['1', '2', '3', '4', '5', '6', '7', '8', '9']]
@@ -239,7 +239,9 @@ def register_callbacks(app):
     def write_data_to_db(data, click):
         if click and data:
             df = pd.DataFrame(data)
+
             data_df = oit_stsb.load_data_from_file(df=df)
+
             data_df.to_sql(table_name,
                            con=conn_string,
                            index=False,
@@ -348,7 +350,7 @@ def register_callbacks(app):
     )
     def filter_staff_table(region, state, work_tasks):
         staff_df = oit_stsb.load_staff(connection_string=conn_string, update='update')
-        staff_columns = oit_stsb.set_staff_columns()
+        staff_columns = oit_stsb.set_upd_staff_columns()
 
         if region == 'Все' and state == 'Все' and work_tasks == 'Все':
             return staff_df.to_dict('records'), staff_columns

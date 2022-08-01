@@ -55,7 +55,7 @@ def make_staff_table(table_name, month, year, month_work_days):
             inplace=True)
     df.reset_index(inplace=True)
 
-    for col in [col for col in df.columns if col not in ['specialist', 'region', 9, 'works_w_tasks']]:
+    for col in [col for col in df.columns if col not in ['specialist', 'region', 9, 'works_w_tasks', 'position']]:
         df[col] = df[col].fillna(0)
         df[col] = df[col].astype(int)
     df['region'] = df['region'].fillna('Не определен')
@@ -69,9 +69,9 @@ def make_staff_table(table_name, month, year, month_work_days):
     df['mean'] = df[1].apply(lambda x: x - count_statistic(income_df=df,
                                                            column=1))
 
-    df = df[['specialist', 'region', 1, 'mean', 'tasks_receive', 'task_number', 4, 6, 8, 9]]
+    df = df[['specialist', 'position', 'region', 1, 'mean', 'tasks_receive', 'task_number', 4, 6, 8, 9]]
 
-    df.columns = [i for i in range(10)]
+    df.columns = [i for i in range(11)]
 
     return df
 
@@ -79,15 +79,16 @@ def make_staff_table(table_name, month, year, month_work_days):
 def set_staff_columns(mv):
     columns = [
         dict(name=['ФИО сотрудника', ''], id=0),
-        dict(name=['Регион', ''], id=1),
-        dict(name=['Решено', 'шт.'], id=2),
-        dict(name=['Отклонение', f'(Среднее {mv})'], id=3),
-        dict(name=['В работе', 'шт.'], id=4),
-        dict(name=['Поступило', 'шт.'], id=5),
-        dict(name=['Иниденты, закрытые без участия 3Л, %', 'Не менее 70%'], id=6),
-        dict(name=['Инциденты, без нарушение SLA, %', 'не менее 85%'], id=7),
-        dict(name=['Инциденты, вернувшиеся на доработку, %', 'Не более 10%'], id=8),
-        dict(name=['Среднее время решения без учета ожидания', 'чч:мм:сс, Не более 24ч'], id=9)
+        dict(name=['Должность', ''], id=1),
+        dict(name=['Регион', ''], id=2),
+        dict(name=['Решено', 'шт.'], id=3),
+        dict(name=['Отклонение', f'(Среднее {mv})'], id=4),
+        dict(name=['В работе', 'шт.'], id=5),
+        dict(name=['Поступило', 'шт.'], id=6),
+        dict(name=['Иниденты, закрытые без участия 3Л, %', 'Не менее 70%'], id=7),
+        dict(name=['Инциденты, без нарушение SLA, %', 'не менее 85%'], id=8),
+        dict(name=['Инциденты, вернувшиеся на доработку, %', 'Не более 10%'], id=9),
+        dict(name=['Среднее время решения без учета ожидания', 'чч:мм:сс, Не более 24ч'], id=10)
     ]
 
     return columns
