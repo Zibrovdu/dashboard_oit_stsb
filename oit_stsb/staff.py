@@ -1,7 +1,7 @@
 import pandas as pd
 
 import oit_stsb
-from oit_stsb.load_cfg import conn_string
+from oit_stsb.load_cfg import conn_string, staff_table_name
 
 
 def count_statistic(income_df, column):
@@ -46,7 +46,7 @@ def make_staff_table(table_name, month, year, month_work_days):
     df.drop(0,
             axis=1,
             inplace=True)
-    df = df.merge(oit_stsb.load_staff(connection_string=conn_string),
+    df = df.merge(oit_stsb.load_staff(connection_string=conn_string, table=staff_table_name),
                   left_on='specialist',
                   right_on='fio',
                   how='left')

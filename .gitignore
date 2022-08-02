@@ -10,3 +10,6 @@
 /.cache/
 /.local/
 content.txt
+*.save
+/.bash_history
+/scripts

@@ -5,7 +5,7 @@ from dash import dcc, html
 
 import oit_stsb
 # from oit_stsb.params import region_style, staff_style, tooltips
-from oit_stsb.load_cfg import table_name, conn_string, colors
+from oit_stsb.load_cfg import table_name, conn_string, colors, staff_table_name
 import oit_stsb.tabs
 
 filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Регион'])]
@@ -19,14 +19,17 @@ def serve_layout():
     # )
 
     filter_query_region = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                             table=staff_table_name,
                                                                              update='update'),
                                                       filter_name='region')
 
     filter_query_work = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                           table=staff_table_name,
                                                                            update='update'),
                                                     filter_name='state')
 
     filter_query_task = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                           table=staff_table_name,
                                                                            update='update'),
                                                     filter_name='works_w_tasks')
 

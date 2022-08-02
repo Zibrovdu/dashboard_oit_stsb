@@ -1,6 +1,6 @@
 import pandas as pd
 from oit_stsb import load_data, load_staff
-from oit_stsb.load_cfg import conn_string, table_name
+from oit_stsb.load_cfg import conn_string, table_name, staff_table_name
 from oit_stsb.staff_plus import parse_analytics
 
 
@@ -56,7 +56,7 @@ def kpi_table(month, year, small=True):
                    year=year,
                    enq_field='solve_date')
 
-    df = df.merge(load_staff(connection_string=conn_string),
+    df = df.merge(load_staff(connection_string=conn_string, table=staff_table_name),
                   left_on='specialist',
                   right_on='fio',
                   how='left')

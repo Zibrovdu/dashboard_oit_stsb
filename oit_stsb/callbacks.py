@@ -291,7 +291,7 @@ def register_callbacks(app):
     def load_table_data(n_click, color_scheme):
         if n_click:
             incoming_df = oit_stsb.picture_day.load_day_df(connection_string=conn_string)
-            staff_df = oit_stsb.load_staff(connection_string=conn_string)
+            staff_df = oit_stsb.load_staff(connection_string=conn_string, table=staff_table_name)
             picture_day_df = oit_stsb.picture_day.make_table(content_df=incoming_df,
                                                              staff_df=staff_df)
 
@@ -324,18 +324,22 @@ def register_callbacks(app):
     )
     def fill_dropdowns(value):
         filter_query_region = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                                 table=staff_table_name,
                                                                                  update='update'),
                                                           filter_name='region')
         filter_query_work = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                               table=staff_table_name,
                                                                                update='update'),
                                                         filter_name='state')
 
         filter_query_task = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                               table=staff_table_name,
                                                                                update='update'),
                                                         filter_name='works_w_tasks')
         subs_options = [{'label': i, "value": i} for i in ['ПУНФА/ПУИО', 'ПУОТ', 'Администрирование', 'Командирование']]
 
         filter_query_fio = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                              table=staff_table_name,
                                                                               update='update'),
                                                        filter_name='fio')
 
@@ -349,7 +353,7 @@ def register_callbacks(app):
         Input('filter_query_tasks', 'value')
     )
     def filter_staff_table(region, state, work_tasks):
-        staff_df = oit_stsb.load_staff(connection_string=conn_string, update='update')
+        staff_df = oit_stsb.load_staff(connection_string=conn_string, table=staff_table_name, update='update')
         staff_columns = oit_stsb.set_upd_staff_columns()
 
         if region == 'Все' and state == 'Все' and work_tasks == 'Все':
@@ -420,7 +424,7 @@ def register_callbacks(app):
         Input('list_staff_fio_modify', 'value')
     )
     def fill_form(fio):
-        staff_df = oit_stsb.load_staff(connection_string=conn_string, update='update')
+        staff_df = oit_stsb.load_staff(connection_string=conn_string, table=staff_table_name, update='update')
         if fio:
             row = staff_df[staff_df['fio'] == fio].iloc[0].tolist()
 

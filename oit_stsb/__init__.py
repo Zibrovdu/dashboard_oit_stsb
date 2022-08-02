@@ -4,7 +4,7 @@ import datetime
 from functools import reduce
 
 from oit_stsb.calendar_data import count_month_work_days
-from oit_stsb.load_cfg import conn_string
+from oit_stsb.load_cfg import conn_string, staff_table_name
 
 
 def bound_replace(string, old):
@@ -73,7 +73,7 @@ def load_data(table, connection_string, **kwargs):
         return df
 
 
-def load_staff(connection_string, **kwargs):
+def load_staff(connection_string, table, **kwargs):
     """
     Синтаксис:
     ----------
@@ -92,13 +92,13 @@ def load_staff(connection_string, **kwargs):
         **string** or **list of strings**
     """
     if 'works' in kwargs:
-        return pd.read_sql("""SELECT * FROM oitscb_staff where works_w_tasks = 'y' and state = 'y'""",
+        return pd.read_sql(f"""SELECT * FROM {table} where works_w_tasks = 'y' and state = 'y'""",
                            con=connection_string)
     elif 'old_staff' in kwargs:
         return pd.read_sql('''SELECT * FROM old_staff''',
                            con=connection_string)
     elif 'update' in kwargs:
-        df = pd.read_sql('''SELECT * FROM oitscb_staff''',
+        df = pd.read_sql(f'''SELECT * FROM {table}''',
                          con=connection_string)
         df['state'] = df['state'].apply(lambda x: 'Работает' if x == 'y' else 'Уволен')
         df['works_w_tasks'] = df['works_w_tasks'].apply(lambda x: 'Да' if x == 'y' else 'Нет')
@@ -110,7 +110,7 @@ def load_staff(connection_string, **kwargs):
         df.sort_values(['fio'], ascending=True, inplace=True)
         return df
     else:
-        return pd.read_sql('''SELECT * FROM oitscb_staff_new''',
+        return pd.read_sql(f'''SELECT * FROM {table}''',
                            con=connection_string)
 
 
@@ -226,7 +226,7 @@ def make_main_table(table_name, month, year, column, month_work_days):
                    year=year,
                    enq_field='solve_date')
 
-    merged_df = df.merge(load_staff(connection_string=conn_string, works='works'),
+    merged_df = df.merge(load_staff(connection_string=conn_string, table=staff_table_name, works='works'),
                          left_on='specialist',
                          right_on='fio',
                          how='left')
@@ -343,7 +343,7 @@ def load_data_from_file(df):
     df = df[(df.solve_date >= datetime.datetime(2020, 10, 1)) | (df.solve_date.isna())]
     df = df[df.assign_group == 'ЦА 1С_Группа сопровождения (ПУНФА, ПУиО, ПУК)']
 
-    old_staff_df = load_staff(connection_string=conn_string, old_staff='old_staff')
+    old_staff_df = load_staff(connection_string=conn_string, table=staff_table_name, old_staff='old_staff')
     for item in df[df['specialist'].str.contains('@')].specialist.unique():
         if item in old_staff_df[old_staff_df.mail.str.contains('@')].mail.unique():
             mask = df[df.specialist == item].index

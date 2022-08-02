@@ -2,7 +2,7 @@ from dash import dcc, html, dash_table
 
 import oit_stsb
 from oit_stsb.params import region_style, staff_style, tooltips, kpi_style_big, picture_day_table_style
-from oit_stsb.load_cfg import colors, conn_string
+from oit_stsb.load_cfg import colors, conn_string, staff_table_name
 
 tab_selected_style = dict(backgroundColor='#ebecf1',
                           fontWeight='bold')
@@ -10,18 +10,22 @@ tab_selected_style = dict(backgroundColor='#ebecf1',
 filter_options = [{'label': item, 'value': i + 1} for i, item in enumerate(['ФИО сотрудника', 'Должность', 'Регион'])]
 
 staff_oit_stsb_df = oit_stsb.load_staff(
-    connection_string=conn_string
+    connection_string=conn_string,
+    table=staff_table_name
 )
 
 filter_query_region = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                         table=staff_table_name,
                                                                          update='update'),
                                                   filter_name='region')
 
 filter_query_work = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                       table=staff_table_name,
                                                                        update='update'),
                                                 filter_name='state')
 
 filter_query_task = oit_stsb.get_filter_options(df=oit_stsb.load_staff(connection_string=conn_string,
+                                                                       table=staff_table_name,
                                                                        update='update'),
                                                 filter_name='works_w_tasks')
 
