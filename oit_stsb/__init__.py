@@ -128,7 +128,7 @@ def set_upd_staff_columns():
     -------
         **Dict**
     """
-    col_name_dict = dict(fio=['ФИО', ''], region=['Регион', ''], state=['Статус', ''],
+    col_name_dict = dict(fio=['ФИО', ''], position=['Должность', ''], region=['Регион', ''], state=['Статус', ''],
                          works_w_tasks=['Участие в оценке', ''], bgu=['Подсистемы', 'ПУНФА/ПУИО'],
                          zkgu=['Подсистемы', 'ПУОТ'], admin=['Подсистемы', 'Администрирование'],
                          command=['Подсистемы', 'Командирование']
@@ -372,7 +372,7 @@ def get_filter_options(df, filter_name):
     return filter_query_options
 
 
-def make_row(fio, region, work, task, subs):
+def make_row(fio, position, region, work, task, subs):
     if work == 'Работает':
         work = 'y'
     else:
@@ -382,13 +382,13 @@ def make_row(fio, region, work, task, subs):
     else:
         task = 'n'
     if subs == 'ПУНФА/ПУИО':
-        row = [fio, region, work, task, 1, np.nan, np.nan, np.nan]
+        row = [fio, position, region, work, task, 1, np.nan, np.nan, np.nan]
     elif subs == 'ПУОТ':
-        row = [fio, region, work, task, np.nan, 1, np.nan, np.nan]
+        row = [fio, position, region, work, task, np.nan, 1, np.nan, np.nan]
     elif subs == 'Администрирование':
-        row = [fio, region, work, task, np.nan, np.nan, 1, np.nan]
+        row = [fio, position, region, work, task, np.nan, np.nan, 1, np.nan]
     elif subs == 'Командирование':
-        row = [fio, region, work, task, np.nan, np.nan, np.nan, 1]
+        row = [fio, position, region, work, task, np.nan, np.nan, np.nan, 1]
     else:
-        row = [fio, region, work, task, np.nan, np.nan, np.nan, np.nan]
+        row = [fio, position, region, work, task, np.nan, np.nan, np.nan, np.nan]
     return row

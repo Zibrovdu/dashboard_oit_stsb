@@ -396,17 +396,20 @@ def register_callbacks(app):
         Output('refresh_staff_table', 'href'),
         Input('load_staff_to_db', 'n_clicks'),
         Input('new_staff_fio', 'value'),
+        Input('new_staff_pos', 'value'),
         Input('add_new_staff_region', 'value'),
         Input('add_new_staff_work', 'value'),
         Input('add_new_staff_task', 'value'),
         Input('add_new_staff_subs', 'value'),
         prevent_initial_call=True,
     )
-    def add_new_person(click, fio, region, work, task, subs):
+    def add_new_person(click, fio, position, region, work, task, subs):
         if click:
-            row = oit_stsb.make_row(fio=fio, region=region, work=work, task=task, subs=subs)
+            row = oit_stsb.make_row(fio=fio, position=position, region=region, work=work, task=task, subs=subs)
 
-            df = pd.DataFrame(columns=['fio', 'region', 'state', 'works_w_tasks', 'bgu', 'zkgu', 'admin', 'command'])
+            df = pd.DataFrame(
+                columns=['fio', 'position', 'region', 'state', 'works_w_tasks', 'bgu', 'zkgu', 'admin', 'command']
+            )
             df.loc[0] = row
             df.to_sql(staff_table_name,
                       con=conn_string,
@@ -417,6 +420,7 @@ def register_callbacks(app):
 
     @app.callback(
         Output('modify_staff_fio', 'value'),
+        Output('modify_staff_pos', 'value'),
         Output('modify_staff_region', 'value'),
         Output('modify_staff_work', 'value'),
         Output('modify_staff_task', 'value'),
@@ -428,7 +432,7 @@ def register_callbacks(app):
         if fio:
             row = staff_df[staff_df['fio'] == fio].iloc[0].tolist()
 
-            subs_type = [index for index, element in enumerate(row[4:]) if element == 'Да']
+            subs_type = [index for index, element in enumerate(row[5:]) if element == 'Да']
             if subs_type == [0]:
                 subs = 'ПУНФА/ПУИО'
             elif subs_type == [1]:
@@ -440,8 +444,8 @@ def register_callbacks(app):
             else:
                 subs = ''
 
-            return row[0], row[1], row[2], row[3], subs
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
+            return row[0], row[1], row[2], row[3], row[4], subs
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
     @app.callback(
         Output('modify_state', 'children'),
@@ -450,21 +454,22 @@ def register_callbacks(app):
         Input('list_staff_fio_modify', 'value'),
         Input('modify_staff_to_db', 'n_clicks'),
         Input('modify_staff_fio', 'value'),
+        Input('modify_staff_pos', 'value'),
         Input('modify_staff_region', 'value'),
         Input('modify_staff_work', 'value'),
         Input('modify_staff_task', 'value'),
         Input('modify_staff_subs', 'value'),
         prevent_initial_call=True,
     )
-    def modify_staff(fio_index, click, fio, region, work, task, subs):
+    def modify_staff(fio_index, click, fio, position, region, work, task, subs):
         if click and fio_index:
-            df = pd.read_sql(f"SELECT * from oitscb_staff", con=conn_string)
+            df = pd.read_sql(f"SELECT * from {staff_table_name}", con=conn_string)
             mask = df[df['fio'] == fio_index].index
-            row = oit_stsb.make_row(fio=fio, region=region, work=work, task=task, subs=subs)
+            row = oit_stsb.make_row(fio=fio, position=position, region=region, work=work, task=task, subs=subs)
 
             df.loc[mask, df.columns] = row
 
-            df.to_sql('oitscb_staff',
+            df.to_sql(staff_table_name,
                       con=conn_string,
                       index=False,
                       if_exists='replace')

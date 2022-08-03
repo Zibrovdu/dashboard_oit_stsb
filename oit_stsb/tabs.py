@@ -608,7 +608,7 @@ load_data_tab = dcc.Tab(
                                     dcc.Dropdown(
                                         id='filter_query_works',
                                         options=filter_query_work,
-                                        value=filter_query_work[2]['value'],
+                                        value=filter_query_work[1]['value'],
                                         clearable=False,
                                         style=dict(width='250px',
                                                    padding='0px 20px',

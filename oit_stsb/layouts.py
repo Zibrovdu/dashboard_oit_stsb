@@ -213,6 +213,14 @@ def serve_layout():
                                       ),
                         ]),
                         html.Br(),
+                        html.Div([
+                            html.Label('Введите должность сотрудника'),
+                            dcc.Input(id='new_staff_pos',
+                                      style=dict(width='350px',
+                                                 fontSize='16px')
+                                      ),
+                        ]),
+                        html.Br(),
                         # html.Br(),
                         html.Div([
                             html.Label('Выберите регион сотрудника'),
@@ -346,6 +354,14 @@ def serve_layout():
                         html.Div([
                             html.Label('Введите ФИО сотрудника'),
                             dcc.Input(id='modify_staff_fio',
+                                      style=dict(width='350px',
+                                                 fontSize='16px')
+                                      ),
+                        ]),
+                        html.Br(),
+                        html.Div([
+                            html.Label('Введите должность сотрудника'),
+                            dcc.Input(id='modify_staff_pos',
                                       style=dict(width='350px',
                                                  fontSize='16px')
                                       ),
