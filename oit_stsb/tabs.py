@@ -441,10 +441,23 @@ picture_day_tab = dcc.Tab(
                                 },
                                 style_data_conditional=picture_day_table_style,
                                 style_header_conditional=picture_day_table_style,
+                                merge_duplicate_headers=True,
                                 tooltip_header={
-                                    'Количество поступивших обращений': {'value': tooltips['3_column'],
-                                                                         'type': 'markdown'}
+                                    0: {'value': tooltips['pd_1_column'], 'type': 'markdown'},
+                                    1: {'value': tooltips['pd_2_column'], 'type': 'markdown'},
+                                    2: {'value': tooltips['pd_3_column'], 'type': 'markdown'},
+                                    3: {'value': tooltips['pd_4_column'], 'type': 'markdown'},
+                                    4: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    5: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    6: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    7: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    8: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    9: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    10: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    11: {'value': tooltips['pd_5_column'], 'type': 'markdown'},
+                                    12: {'value': tooltips['pd_6_column'], 'type': 'markdown'}
                                 },
+                                tooltip_duration=None,
                                 export_format='xlsx'
                             )
                         ],
