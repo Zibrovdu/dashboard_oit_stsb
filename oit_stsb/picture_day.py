@@ -60,7 +60,7 @@ def data_table(data_df, filename):
 
 
 def make_table(content_df, staff_df):
-    staff_df.loc[len(staff_df)] = 'Не определено', 'Не определено', 'y', 'y', '', '', '', ''
+    staff_df.loc[len(staff_df)] = 'Не определено', 'Не определено', 'Не определено', 'y', 'y', '', '', '', ''
 
     merged_df = content_df.merge(staff_df[['fio', 'region', 'works_w_tasks']],
                                  how='left',
